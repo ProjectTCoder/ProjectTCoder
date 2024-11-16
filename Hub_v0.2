@@ -1,4 +1,3 @@
-print("V0.2")
 local Run_ = game:GetService("RunService")
 local Players = game.Players
 local L_Player = Players.LocalPlayer
@@ -59,7 +58,7 @@ end
 function Esp_Box_System(Visual_Box : Frame , Hrp_Pose : Vector3)
 	local Position_On_Screen : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose)
 	if Valide_On_Screen then
-		Visual_Box.Size = Vector2.new(100,100)
+		Visual_Box.Size = Vector2.new(1000/Position_On_Screen.Z,100)
 		Visual_Box.Position = Vector2.new(Position_On_Screen.X - Visual_Box.Size.X/2,Position_On_Screen.Y - Visual_Box.Size.Y/2)
 		if not Visual_Box.Visible then Visual_Box.Visible = true end
 	else
@@ -192,7 +191,7 @@ end
 ----------------------------------------------------------------------|: Library UI Porject_T
 
 local UILib = loadstring(game:HttpGet('https://raw.githubusercontent.com/ProjectTCoder/ProjectTCoder/refs/heads/main/Project_T_Ui.lua'))()
-local Window = UILib.new("Fallen", "Project_T", "</>")
+local Window = UILib.new("Fallen", "Hub", "</>")
 
 local Category1 = Window:Category("Esp", "http://www.roblox.com/asset/?id=135455869058672")
 local Esp_Players = Category1:Button("Players", "http://www.roblox.com/asset/?id=8395621517")
