@@ -180,7 +180,7 @@ function Esp_Enabled_Function(Bolean : boolean)
 	if Bolean and Settings.Esp_Activated then
 		game.Players.PlayerAdded:Connect(function(Plr) CharAdded_Function(Plr) if Plr.Character then Esp_System(Plr.Character) else print("No Character for: "..Plr.Name) end end)
 
-		for Index,Plrs in game.Players:GetChildren() do
+		for Index,Plrs in game.Players:GetPlayers() do
 			if  Plrs ~= L_Player  then
 				if Plrs.Character then Esp_System(Plrs.Character) end
 				CharAdded_Function(Plrs)
