@@ -1,12 +1,11 @@
-
 local Run_ = game:GetService("RunService")
 local Players = game.Players
 local L_Player = Players.LocalPlayer
 local Camera = game.Workspace.CurrentCamera
 local WorldToViewportPoint = Camera.WorldToViewportPoint
-print("Tost12")
+print("New_1")
 local HeadOff = Vector3.new(0,1.5,0)
-local Legoff = Vector3.new(0,4.1,0)
+local Legoff = Vector3.new(0,4,0)
 
 local Max_Distance_Calcule_Esp = 1500
 local Alert_Distance = 250
@@ -49,7 +48,7 @@ function Create_Esp_Box()
 	Esp_Box_Visual.Thickness = 1.5
 	Esp_Box_Visual.Filled = false
 	Esp_Box_Visual.Visible = false
-	Esp_Box_Visual.Color = Color3.fromRGB(68, 0, 255)
+	Esp_Box_Visual.Color = Color3.fromRGB(255, 0, 255)
 	return Esp_Box_Visual
 end
 
@@ -66,7 +65,7 @@ function Esp_Box_System(Visual_Box : Frame , Hrp_Pose : Vector3)
 	local Position_On_Screen2 : Vector2 , Valide_On_Screen : boolean = WorldToViewportPoint(Camera,Hrp_Pose - Legoff)
 	local Position_On_Screen3 : Vector2 , Valide_On_Screen : boolean = WorldToViewportPoint(Camera,Hrp_Pose + HeadOff)
 	if Valide_On_Screen then
-		Visual_Box.Size = Vector2.new(998/Position_On_Screen.Z,Position_On_Screen3.Y - Position_On_Screen2.Y)
+		Visual_Box.Size = Vector2.new(1000/Position_On_Screen.Z,Position_On_Screen3.Y - Position_On_Screen2.Y)
 		Visual_Box.Position = Vector2.new(Position_On_Screen.X - Visual_Box.Size.X/2,Position_On_Screen.Y - Visual_Box.Size.Y/2)
 		if not Visual_Box.Visible then Visual_Box.Visible = true end
 	else
@@ -179,8 +178,8 @@ end
 
 function Esp_Enabled_Function(Bolean : boolean)
 	if Bolean and Settings.Esp_Activated then
-		PlayerAdded_Connection_esp = game.Players.PlayerAdded:Connect(function(Plr) CharAdded_Function(Plr) if Plr.Character then Esp_System(Plr.Character)end end)
-		
+		PlayerAdded_Connection_esp = game.Players.PlayerAdded:Connect(function(Plr) CharAdded_Function(Plr) if Plr.Character then Esp_System(Plr.Character) else print("No Character for: "..Plr.Name) end end)
+
 		for Index,Plrs in game.Players:GetChildren() do
 			if  Plrs ~= L_Player  then
 				if Plrs.Character then Esp_System(Plrs.Character) end
