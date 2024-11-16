@@ -4,8 +4,8 @@ local L_Player = Players.LocalPlayer
 local Camera = game.Workspace.CurrentCamera
 local WorldToViewportPoint = Camera.WorldToViewportPoint
 
-local HeadOff = Vector3.new(0,0.5,0)
-local Legoff = Vector3.new(0,3,0)
+local HeadOff = Vector3.new(0,1.5,0)
+local Legoff = Vector3.new(0,4,0)
 
 local Max_Distance_Calcule_Esp = 1500
 local Alert_Distance = 250
@@ -45,9 +45,10 @@ end
 function Create_Esp_Box()
 	local Esp_Box_Visual = Drawing.new("Square") :: Frame
 	Esp_Box_Visual.Transparency = 1
-	Esp_Box_Visual.Thickness = 3
+	Esp_Box_Visual.Thickness = 1.5
 	Esp_Box_Visual.Filled = false
 	Esp_Box_Visual.Visible = false
+	Esp_Box_Visual.Color = Color3.fromRGB(255, 0, 255)
 	return Esp_Box_Visual
 end
 
