@@ -1,9 +1,9 @@
-local Run_ = game:GetService("RunService")
+local Run_ = game:GetService("RunService") ; print("Error-1")
 local Players = game.Players
 local L_Player = Players.LocalPlayer
 local Camera = game.Workspace.CurrentCamera
 local WorldToViewportPoint = Camera.WorldToViewportPoint
-print("New_1")
+
 local HeadOff = Vector3.new(0,1.5,0)
 local Legoff = Vector3.new(0,4,0)
 
@@ -173,12 +173,12 @@ function Esp_System(Char : Model)
 end
 
 function CharAdded_Function(Plrs : Players)
-	CharAdded_Esp = Plrs.CharacterAdded:Connect(function(Char) Esp_System(Char) end)
+	task.spawn(function() CharAdded_Esp = Plrs.CharacterAdded:Connect(function(Char) Esp_System(Char) end) end)
 end
 
 function Esp_Enabled_Function(Bolean : boolean)
 	if Bolean and Settings.Esp_Activated then
-		PlayerAdded_Connection_esp = game.Players.PlayerAdded:Connect(function(Plr) CharAdded_Function(Plr) if Plr.Character then Esp_System(Plr.Character) else print("No Character for: "..Plr.Name) end end)
+		game.Players.PlayerAdded:Connect(function(Plr) CharAdded_Function(Plr) if Plr.Character then Esp_System(Plr.Character) else print("No Character for: "..Plr.Name) end end)
 
 		for Index,Plrs in game.Players:GetChildren() do
 			if  Plrs ~= L_Player  then
