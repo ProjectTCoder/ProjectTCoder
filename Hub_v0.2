@@ -2,6 +2,10 @@ local Run_ = game:GetService("RunService")
 local Players = game.Players
 local L_Player = Players.LocalPlayer
 local Camera = game.Workspace.CurrentCamera
+local WorldToViewportPoint = Camera.WorldToViewportPoint
+
+local HeadOff = Vector3.new(0,0.5,0)
+local Legoff = Vector3.new(0,3,0)
 
 local Max_Distance_Calcule_Esp = 1500
 local Alert_Distance = 250
@@ -57,8 +61,10 @@ end
 
 function Esp_Box_System(Visual_Box : Frame , Hrp_Pose : Vector3)
 	local Position_On_Screen : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose)
+	local Position_On_Screen2 : Vector2 , Valide_On_Screen : boolean = WorldToViewportPoint(Camera,Hrp_Pose - Legoff)
+	local Position_On_Screen3 : Vector2 , Valide_On_Screen : boolean = WorldToViewportPoint(Camera,Hrp_Pose + HeadOff)
 	if Valide_On_Screen then
-		Visual_Box.Size = Vector2.new(1000/Position_On_Screen.Z,100)
+		Visual_Box.Size = Vector2.new(1000/Position_On_Screen.Z,Position_On_Screen3.Y - Position_On_Screen2.Y)
 		Visual_Box.Position = Vector2.new(Position_On_Screen.X - Visual_Box.Size.X/2,Position_On_Screen.Y - Visual_Box.Size.Y/2)
 		if not Visual_Box.Visible then Visual_Box.Visible = true end
 	else
