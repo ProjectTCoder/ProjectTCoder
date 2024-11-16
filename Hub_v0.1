@@ -1,4 +1,4 @@
-print("Test1")
+print("V0.2")
 local Run_ = game:GetService("RunService")
 local Players = game.Players
 local L_Player = Players.LocalPlayer
@@ -57,14 +57,14 @@ function Return_Distance_Max(Hrp_Pose : Vector3)
 end
 
 function Esp_Box_System(Visual_Box : Frame , Hrp_Pose : Vector3)
-local Position_On_Screen : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose)
-if Valide_On_Screen then
-	Visual_Box.Size = Vector2.new(100,100)
-	Visual_Box.Position = Vector2.new(Position_On_Screen.X - Visual_Box.Size.X/2,Position_On_Screen.Y - Visual_Box.Size.Y/2)
-	if not Visual_Box.Visible then Visual_Box.Visible = true end
-else
-	if Visual_Box.Visible then Visual_Box.Visible = false end
-end
+	local Position_On_Screen : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose)
+	if Valide_On_Screen then
+		Visual_Box.Size = Vector2.new(100,100)
+		Visual_Box.Position = Vector2.new(Position_On_Screen.X - Visual_Box.Size.X/2,Position_On_Screen.Y - Visual_Box.Size.Y/2)
+		if not Visual_Box.Visible then Visual_Box.Visible = true end
+	else
+		if Visual_Box.Visible then Visual_Box.Visible = false end
+	end
 
 end
 
@@ -95,7 +95,9 @@ function Esp_Name_System(Visual_Name : TextLabel, Hrp_Pose : Vector3,Player_Name
 
 end
 
-function Esp_Name(Character : Model , HumanoidRootPart : Part)
+function Esp_Name(Character : Model)
+	local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+	if not HumanoidRootPart then print("Error for: "..Character.Name) return end
 	local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 	local Visual_Name = Create_Esp_Name()
 	local Visual_Box = Create_Esp_Box()
@@ -161,8 +163,7 @@ end
 
 
 function Esp_System(Char : Model)
-	local HumanoidRootPart =  Char.PrimaryPart --Char:WaitForChild("HumanoidRootPart",10) or Players:GetPlayerFromCharacter(Char).Character:WaitForChild("HumanoidRootPart") or Char.PrimaryPart
-	task.spawn(function() Esp_Name(Char,HumanoidRootPart) end)
+	task.spawn(function() Esp_Name(Char) end)
 end
 
 function CharAdded_Function(Plrs : Players)
@@ -171,7 +172,8 @@ end
 
 function Esp_Enabled_Function(Bolean : boolean)
 	if Bolean and Settings.Esp_Activated then
-		PlayerAdded_Connection_esp = game.Players.PlayerAdded:Connect(function(Plr) CharAdded_Function(Plr) end)
+		PlayerAdded_Connection_esp = game.Players.PlayerAdded:Connect(function(Plr) CharAdded_Function(Plr) if Plr.Character then Esp_System(Plr.Character)end end)
+		
 		for Index,Plrs in game.Players:GetChildren() do
 			if  Plrs ~= L_Player  then
 				if Plrs.Character then Esp_System(Plrs.Character) end
@@ -185,6 +187,7 @@ function Esp_Enabled_Function(Bolean : boolean)
 	end
 
 end
+
 
 ----------------------------------------------------------------------|: Library UI Porject_T
 
