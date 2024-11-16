@@ -1209,7 +1209,7 @@ local function getObjGen()
             Gui.Watermark.BackgroundTransparency = 1.000
             Gui.Watermark.Size = UDim2.new(0.5, 0, 0.0199999996, 0)
             Gui.Watermark.Font = Enum.Font.Gotham
-            Gui.Watermark.Text = "hydrahub v2 | nil | nil"
+            Gui.Watermark.Text = "Project_T | nil | nil"
             Gui.Watermark.TextColor3 = Color3.fromRGB(255, 255, 255)
             Gui.Watermark.TextSize = 14.000
             Gui.Watermark.TextStrokeTransparency = 0.800
@@ -1484,6 +1484,7 @@ local function getObjGen()
             Gui.MainWindow.Name = "MainWindow"
             Gui.MainWindow.Parent = Gui.Content_6
             Gui.MainWindow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.MainWindow.BackgroundTransparency = 0.7
             Gui.MainWindow.LayoutOrder = 1
             Gui.MainWindow.Size = UDim2.new(1, 0, 0.699999988, 0)
 
@@ -3265,7 +3266,7 @@ function UILibrary.new(gameName, userId, rank)
     local Drag = Draggable.Drag(window.MainUI, Frame)
 
     --// Customize the GUI
-    window.Watermark.Text = ("hydrahub v2 | %s | %s"):format(userId, gameName)
+    window.Watermark.Text = ("Project_T | %s | %s"):format(userId, gameName)
     local userinfo = window.MainUI.Sidebar.ContentHolder.UserInfo.Content
     userinfo.Rank.Text = rank
     userinfo.Title.Text = userId
