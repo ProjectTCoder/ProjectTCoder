@@ -1200,7 +1200,7 @@ local function getObjGen()
             Gui.Window.Name = "Window"
             Gui.Window.Parent = Gui.Objects
             Gui.Window.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Gui.Window.BackgroundTransparency = 0.5
+            Gui.Window.BackgroundTransparency = 1.000
             Gui.Window.Size = UDim2.new(1, 0, 1, 0)
 
             Gui.Watermark.Name = "Watermark"
@@ -1228,6 +1228,7 @@ local function getObjGen()
             Gui.MainUI.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
             Gui.MainUI.Position = UDim2.new(0.5, 0, 0.5, 0)
             --Gui.MainUI.Size = UDim2.new(0.47, 0, 0.75, 0)
+            Gui.MainUI.BackgroundTransparency = 0.8
             Gui.MainUI.Size = UDim2.new(0, 851, 0, 488)
             Gui.MainUI.ZIndex = 100
 
