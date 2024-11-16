@@ -161,7 +161,7 @@ end
 
 
 function Esp_System(Char : Model)
-	local HumanoidRootPart = Char:WaitForChild("HumanoidRootPart",10) or Players:GetPlayerFromCharacter(Char).Character:WaitForChild("HumanoidRootPart") or Char.PrimaryPart
+	local HumanoidRootPart =  Char.PrimaryPart --Char:WaitForChild("HumanoidRootPart",10) or Players:GetPlayerFromCharacter(Char).Character:WaitForChild("HumanoidRootPart") or Char.PrimaryPart
 	task.spawn(function() Esp_Name(Char,HumanoidRootPart) end)
 end
 
