@@ -30,6 +30,8 @@ Settings_Box.Offest_X = 0
 
 local PlayerAdded_Connection_esp
 local CharAdded_Esp
+local Char_Added_2
+local PlayerAdded_1
 
 function Create_Esp_Name()
 	local Esp_Name_Visual = Drawing.new("Text") :: TextLabel
@@ -102,7 +104,7 @@ function Esp_Name_System(Visual_Name : TextLabel, Hrp_Pose : Vector3,Player_Name
 end
 
 function Esp_Name(Character : Model)
-	
+	if not Character then return end
 	local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
 	
 	if not HumanoidRootPart then 
@@ -116,6 +118,7 @@ function Esp_Name(Character : Model)
 	until HumanoidRootPart 
 	end
 	
+	if not Character then return end
 	local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 	local Visual_Name = Create_Esp_Name()
 	local Visual_Box = Create_Esp_Box()
@@ -135,6 +138,8 @@ function Esp_Name(Character : Model)
 		if Connection1 then Connection1:Disconnect() Connection1 = nil end
 		if Connection2 then Connection2:Disconnect() Connection2 = nil end
 		if Connection3 then Connection3:Disconnect() Connection3 = nil end
+		if Char_Added_2 then Char_Added_2:Disconnect() Char_Added_2 = nil end
+		if PlayerAdded_1 then PlayerAdded_1:Disconnect()  PlayerAdded_1 = nil end
 		Visual_Name:Remove()
 		Visual_Box:Remove()
 	end
@@ -189,13 +194,13 @@ function Character_Added(Character : Model)
 end
 
 function PlayerJoining()
-	Players.PlayerAdded:Connect(function(Plr)
-		Plr.CharacterAdded:Connect(Character_Added)
+	PlayerAdded_1 = Players.PlayerAdded:Connect(function(Plr)
+		Char_Added_2 = Plr.CharacterAdded:Connect(Character_Added)
 	end)
 end
 
 function Esp_System(Char : Model)
-	if Settings.Esp_Activated then
+	if Settings.Esp_Activated and Char then
 		task.spawn(function() Esp_Name(Char) end)
 	end
 end
@@ -239,6 +244,7 @@ function Esp_Enabled_Function(Bolean : boolean)
 	end
 
 end
+
 
 ----------------------------------------------------------------------|: Library UI Porject_T
 
