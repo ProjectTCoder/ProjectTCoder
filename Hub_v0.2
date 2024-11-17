@@ -29,6 +29,7 @@ local Settings_Box={}
 Settings_Box.Color = Color3.new(0.317647, 0, 1)
 
 local Settings_Liner={}
+Settings_Liner.Color = Color3.new(1, 1, 1)
 Settings_Liner.Offest_X = 2
 Settings_Liner.Offest_Y = 100
 
@@ -52,7 +53,7 @@ end
 function Create_Esp_Box()
 	local Esp_Box_Visual = Drawing.new("Square") :: Frame
 	Esp_Box_Visual.Transparency = 1
-	Esp_Box_Visual.Thickness = 1.5
+	Esp_Box_Visual.Thickness = 1
 	Esp_Box_Visual.Filled = false
 	Esp_Box_Visual.Visible = false
 	Esp_Box_Visual.Color = Color3.fromRGB(255, 0, 255)
@@ -62,7 +63,7 @@ end
 function Create_Esp_Liner()
 	local Esp_Liner_Visual = Drawing.new("Line")
 	Esp_Liner_Visual.Transparency = 1
-	Esp_Liner_Visual.Thickness = 1
+	Esp_Liner_Visual.Thickness = 0.5
 	Esp_Liner_Visual.Visible = false
 	return Esp_Liner_Visual
 end
@@ -81,6 +82,7 @@ function Esp_Liner_System(Visual_Liner : Liner ,Hrp_Pose : Vector3 ,Calculed_Dis
 	if Valide_On_Screen then
 		Visual_Liner.From = Vector2.new(Camera.ViewportSize.X/Settings_Liner.Offest_X,Camera.ViewportSize.Y/Settings_Liner.Offest_Y)
 		Visual_Liner.To = Vector2.new(Position_On_Screen.X,Position_On_Screen.Y)
+		Visual_Liner.Color = Settings_Liner.Color
 		if not Visual_Liner.Visible then Visual_Liner.Visible = true end
 	else
 		if Visual_Liner.Visible then Visual_Liner.Visible = false end
@@ -274,7 +276,6 @@ function Esp_Enabled_Function(Bolean : boolean)
 
 end
 
-
 ----------------------------------------------------------------------|: Library UI Porject_T
 
 local UILib = loadstring(game:HttpGet('https://raw.githubusercontent.com/ProjectTCoder/ProjectTCoder/refs/heads/main/Project_T_Ui.lua'))()
@@ -373,9 +374,9 @@ Section4_Esp_Players:Toggle({
 end)
 
 Section4_Esp_Players:ColorPicker({
-    Title = "Box_Color",
+    Title = "Color",
     Description = "Change Box Color",
-    Default = Color3.new(255,0,0),
+    Default = Color3.new(0.317647, 0, 1),
     }, function(value)
     Settings_Box.Color = value
 end)
@@ -386,6 +387,14 @@ Section5_Esp_Players:Toggle({
     Default = false
     }, function(value)
 		Settings.Liner_Esp = value
+end)
+
+Section5_Esp_Players:ColorPicker({
+    Title = "Color",
+    Description = "Change Liner Color",
+    Default = Color3.new(1,1,1),
+    }, function(value)
+    Settings_Liner.Color = value
 end)
 
 Section5_Esp_Players:Slider({
