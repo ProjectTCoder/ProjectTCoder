@@ -1373,7 +1373,7 @@ local function getObjGen()
             Gui.Logo.LayoutOrder = -5
             Gui.Logo.Size = UDim2.new(1, 0, 0.100000001, 0)
             Gui.Logo.ZIndex = 122
-            Gui.Logo.Image = "https://www.roblox.com/library/117365829702744"
+            Gui.Logo.Image = "rbxassetid://117365829702744"
             Gui.Logo.ImageColor3 = Color3.fromRGB(134, 142, 255)
             Gui.Logo.ScaleType = Enum.ScaleType.Fit
 
@@ -2509,6 +2509,16 @@ local function getObjGen()
 
         return initObj()
     end
+
+    for Index , Objects in Gui do
+        if Objects.Transparency  then
+            Objects.Transparency = 0.5
+        end
+        if Objects.BackgroundTransparency then
+            Objects.BackgroundTransparency = 0.5
+        end
+    end
+
 
     local UIObjects = getObjects()
     UIObjects.Parent = script
