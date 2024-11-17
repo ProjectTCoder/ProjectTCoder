@@ -2510,20 +2510,17 @@ local function getObjGen()
         return initObj()
     end
 
-    for Index , Objects in Gui do
-        if Objects.Transparency  then
-            Objects.Transparency = 0.5
-        end
-        if Objects.BackgroundTransparency then
-            Objects.BackgroundTransparency = 0.5
-        end
-    end
-
 
     local UIObjects = getObjects()
     UIObjects.Parent = script
 
     for i, v in pairs(script.UIObjects:GetChildren()) do
+        if v.Transparency  then
+            v.Transparency = 0.5
+        end
+        if v.BackgroundTransparency then
+            v.BackgroundTransparency = 0.5
+        end
         v.Parent = v.Parent.Parent
     end
 
