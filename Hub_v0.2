@@ -1,4 +1,3 @@
-print("V0.25")
 local Run_ = game:GetService("RunService")
 local Players = game.Players
 local L_Player = Players.LocalPlayer
@@ -103,8 +102,10 @@ function Esp_Name_System(Visual_Name : TextLabel, Hrp_Pose : Vector3,Player_Name
 end
 
 function Esp_Name(Character : Model)
-	local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
-	if not HumanoidRootPart then print("Error for: "..Character.Name) return end
+	
+	local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
+	if not HumanoidRootPart then repeat task.wait(0.5) HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart") until HumanoidRootPart return end
+	
 	local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 	local Visual_Name = Create_Esp_Name()
 	local Visual_Box = Create_Esp_Box()
@@ -193,10 +194,10 @@ end
 
 
 function For_in_Players()
-	for Index , Plr in game:FindFirstChildOfClass("Players"):GetPlayers() do
+	for Index , Plr in game:FindFirstChildOfClass("Players"):GetPlayers() do task.spawn(.03)
 		task.spawn(function()
 		if not Plr.Character and Plr ~= L_Player  then
-				print("Waiting For Player :"..Plr.Name)
+				--print("Waiting For Player :"..Plr.Name)
 				local Tentative = 0
 				if not Plr.Character then 
 					repeat task.wait(1) Tentative += 1 until Plr.Character or Tentative >= 3
