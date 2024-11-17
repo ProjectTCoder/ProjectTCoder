@@ -1,3 +1,4 @@
+print("V0.2")
 local Run_ = game:GetService("RunService")
 local Players = game.Players
 local L_Player = Players.LocalPlayer
@@ -193,8 +194,8 @@ end
 
 function For_in_Players()
 	for Index , Plr in game:FindFirstChildOfClass("Players"):GetPlayers() do
-		if not Plr.Character  then
-			task.spawn(function()
+		task.spawn(function()
+		if not Plr.Character and Plr ~= L_Player  then
 				print("Waiting For Player :"..Plr.Name)
 				Plr.CharacterAdded:Wait()
 				Plr.CharacterAppearanceLoaded:Wait()
@@ -206,14 +207,14 @@ function For_in_Players()
 					CharAdded_Function(Plr)
 					Esp_System(Plr.Character)
 				end
-			end)
-		elseif Plr.Character then
+		elseif Plr.Character and Plr ~= L_Player then
 			print("Loading For _: "..Plr.Name)
 			Plr.CharacterAdded:Wait()
 			print("Loading Succesfull For _: "..Plr.Name)
 			task.spawn(function() Esp_System(Plr.Character) end)
 			CharAdded_Function(Plr)
 		end
+		end)
 	end
 end
 
