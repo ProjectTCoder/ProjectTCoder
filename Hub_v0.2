@@ -207,8 +207,10 @@ function For_in_Players()
 				end
 			end)
 		elseif Plr.Character then
+			print("Loading For _: "..Plr.Name)
 			Plr.CharacterAdded:Wait()
 			Plr.CharacterAppearanceLoaded:Wait()
+			print("Loading Succesfull For _: "..Plr.Name)
 			task.spawn(function() Esp_System(Plr.Character) end)
 			CharAdded_Function(Plr)
 		end
@@ -218,126 +220,12 @@ end
 
 function Esp_Enabled_Function(Bolean : boolean)
 	if Bolean and Settings.Esp_Activated then
+		task.spawn(function()
 		PlayerJoining()
+		end)
 		For_in_Players()
 	else
 		Settings.Esp_Activated = false
 	end
 
 end
-
-
-----------------------------------------------------------------------|: Library UI Porject_T
-
-local UILib = loadstring(game:HttpGet('https://raw.githubusercontent.com/ProjectTCoder/ProjectTCoder/refs/heads/main/Project_T_Ui.lua'))()
-local Window = UILib.new("Fallen", "Hub", "</>")
-
-local Category1 = Window:Category("Esp", "https://www.roblox.com/library/83953828967340") 
-local Esp_Players = Category1:Button("Players", "http://www.roblox.com/asset/?id=8395621517")
-local Esp_Objects = Category1:Button("Objects", "http://www.roblox.com/asset/?id=8395621517")
-
-local Section1_Esp_Players = Esp_Players:Section("Enabled", "Left")
-local Section2_Esp_Players = Esp_Players:Section("Settings", "Right")
-local Section3_Esp_Players = Esp_Players:Section("Name & Stubs", "Left")
-local Section4_Esp_Players = Esp_Players:Section("Box", "Right")
-
-Section1_Esp_Players:Toggle({
-    Title = "Esp",
-    Description = "Enable Esp",
-    Default = false
-    }, function(value)
-    Settings.Esp_Activated=value
-	Esp_Enabled_Function(value)
-end)
-
-Section2_Esp_Players:Slider({
-    Title = "Max_Distance",
-    Description = "Ajust You Distance",
-    Default = Max_Distance_Calcule_Esp,
-    Min = 100,
-    Max = 25000
-    }, function(value)
-	Max_Distance_Calcule_Esp = value
-end)
-Section2_Esp_Players:Slider({
-    Title = "Alert_Distance",
-    Description = "Ajust You Distance",
-    Default = Alert_Distance,
-    Min = 10,
-    Max = 2000
-    }, function(value)
-	Alert_Distance = value
-end)
-
-Section3_Esp_Players:Toggle({
-    Title = "Name",
-    Description = "Add Visula Name",
-    Default = false
-    }, function(value)
-	Settings.Esp_Name_Connect = value
-end)
-
-Section3_Esp_Players:Toggle({
-    Title = "Distance",
-    Description = "Add Visula Distance",
-    Default = false
-    }, function(value)
-	Settings.Distance_Stups = value
-end)
-
-Section3_Esp_Players:Slider({
-    Title = "Text_Size",
-    Description = "Ajust Text Sise",
-    Default = Settings_Esp_Name.Size_,
-    Min = 1,
-    Max = 35
-    }, function(value)
-	Settings_Esp_Name.Size_ = value
-end)
-
-Section3_Esp_Players:Slider({
-    Title = "Offest_X",
-    Description = "Ajust Offest.X",
-    Default = Settings_Esp_Name.Offest_X,
-    Min = -50,
-    Max = 50
-    }, function(value)
-	Settings_Esp_Name.Offest_X = value
-end)
-
-Section3_Esp_Players:Slider({
-    Title = "Offest_Y",
-    Description = "Ajust Offest.Y",
-    Default = Settings_Esp_Name.Offest_Y,
-    Min = -50,
-    Max = 50
-    }, function(value)
-	Settings_Esp_Name.Offest_Y = value
-end)
-
-Section4_Esp_Players:Toggle({
-    Title = "Box",
-    Description = "Add Visula Box",
-    Default = false
-    }, function(value)
-	Settings.Box_Esp = value
-end)
-
-Section4_Esp_Players:Slider({
-    Title = "Offest_X",
-    Description = "Ajust Offest.X",
-    Default = Settings_Box.Offest_X,
-    Min = -50,
-    Max = 50
-    }, function(value)
-		Settings_Box.Offest_X = value
-end)
-Section4_Esp_Players:Slider({
-    Title = "Offest_Y",
-    Description = "Ajust Offest.Y",
-    Default = Settings_Box.Offest_Y,
-    Min = -50,
-    Max = 50
-    }, function(value)
-		Settings_Box.Offest_Y = value
-end)
