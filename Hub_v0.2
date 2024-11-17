@@ -194,7 +194,7 @@ end
 
 
 function For_in_Players()
-	for Index , Plr in game:FindFirstChildOfClass("Players"):GetPlayers() do task.spawn(.03)
+	for Index , Plr in game:FindFirstChildOfClass("Players"):GetPlayers() do task.wait(.03)
 		task.spawn(function()
 		if not Plr.Character and Plr ~= L_Player  then
 				--print("Waiting For Player :"..Plr.Name)
