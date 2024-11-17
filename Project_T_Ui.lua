@@ -3279,7 +3279,6 @@ function UILibrary.new(gameName, userId, rank)
         if Process then return end
         if Input.KeyCode == Enum.KeyCode.P then
             GUI.Enabled = not GUI.Enabled
-            print("Yep")
         end
     end)
     
