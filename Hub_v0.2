@@ -104,7 +104,17 @@ end
 function Esp_Name(Character : Model)
 	
 	local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
-	if not HumanoidRootPart then repeat task.wait(0.5) local LookingFor = Character:FindFirstChild("HumanoidRootPart") if LookingFor then HumanoidRootPart = LookingFor end until HumanoidRootPart return end
+	
+	if not HumanoidRootPart then 
+	repeat task.wait(0.5)
+		if Character then 
+		   local NewTetative = Character:FindFirstChild("HumanoidRootPart")
+		   if NewTetative then HumanoidRootPart = NewTetative end
+		elseif not Character then
+			  return
+		end
+	until HumanoidRootPart 
+	end
 	
 	local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 	local Visual_Name = Create_Esp_Name()
@@ -185,7 +195,9 @@ function PlayerJoining()
 end
 
 function Esp_System(Char : Model)
-	task.spawn(function() Esp_Name(Char) end)
+	if Settings.Esp_Activated then
+		task.spawn(function() Esp_Name(Char) end)
+	end
 end
 
 function CharAdded_Function(Plrs : Players)
