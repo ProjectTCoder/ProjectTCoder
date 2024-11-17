@@ -80,7 +80,6 @@ end
 function Esp_Liner_System(Visual_Liner : Liner ,Hrp_Pose : Vector3 ,Calculed_Distance : number)
 	local Position_On_Screen : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose)
 	if Valide_On_Screen then
-		print("Work")
 		Visual_Liner.From = Vector2.new(Camera.ViewportSize.X/Settings_Liner.Offest_X,Camera.ViewportSize.Y/Settings_Liner.Offest_Y)
 		Visual_Liner.To = Vector2.new(Position_On_Screen.X,Position_On_Screen.Y)
 		if not Visual_Liner.Visible then Visual_Liner.Visible = true end
