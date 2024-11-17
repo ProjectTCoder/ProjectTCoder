@@ -104,7 +104,7 @@ end
 function Esp_Name(Character : Model)
 	
 	local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
-	if not HumanoidRootPart then repeat task.wait(0.5) HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart") until HumanoidRootPart return end
+	if not HumanoidRootPart then repeat task.wait(0.5) local LookingFor = Character:FindFirstChild("HumanoidRootPart") if LookingFor then HumanoidRootPart = LookingFor end until HumanoidRootPart return end
 	
 	local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 	local Visual_Name = Create_Esp_Name()
@@ -227,7 +227,6 @@ function Esp_Enabled_Function(Bolean : boolean)
 	end
 
 end
-
 
 ----------------------------------------------------------------------|: Library UI Porject_T
 
