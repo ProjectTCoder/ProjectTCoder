@@ -1,4 +1,4 @@
-print("V0.24")
+print("V0.25")
 local Run_ = game:GetService("RunService")
 local Players = game.Players
 local L_Player = Players.LocalPlayer
@@ -197,7 +197,6 @@ function For_in_Players()
 		task.spawn(function()
 		if not Plr.Character and Plr ~= L_Player  then
 				print("Waiting For Player :"..Plr.Name)
-				Plr.CharacterAdded:Wait()
 				local Tentative = 0
 				if not Plr.Character then 
 					repeat task.wait(1) Tentative += 1 until Plr.Character or Tentative >= 3
@@ -208,9 +207,6 @@ function For_in_Players()
 					Esp_System(Plr.Character)
 				end
 		elseif Plr.Character and Plr ~= L_Player then
-			print("Loading For _: "..Plr.Name)
-			Plr.CharacterAdded:Wait()
-			print("Loading Succesfull For _: "..Plr.Name)
 			task.spawn(function() Esp_System(Plr.Character) end)
 			CharAdded_Function(Plr)
 		end
@@ -230,6 +226,7 @@ function Esp_Enabled_Function(Bolean : boolean)
 	end
 
 end
+
 
 ----------------------------------------------------------------------|: Library UI Porject_T
 
