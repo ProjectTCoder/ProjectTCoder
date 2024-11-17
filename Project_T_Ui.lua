@@ -3244,11 +3244,13 @@ for i, v in pairs(UILibNames) do
     UILibrary[v].__index = UILibrary[v]
 end
 
+local uisRr4932fFZ = game:GetService("UserInputService")
+
 function UILibrary.new(gameName, userId, rank)
     local GUI = Instance.new("ScreenGui")
     GUI.Name = HttpService:GenerateGUID(false)
     GUI.Parent =
-        RunService:IsStudio() == false and game:GetService("CoreGui") or LocalPlayer:WaitForChild("PlayerGui")
+        RunService:IsStudio() == false and game:GetService("CoreGui") --or LocalPlayer:WaitForChild("PlayerGui")
     GUI.ResetOnSpawn = false
     GUI.ZIndexBehavior = Enum.ZIndexBehavior.Global
 
@@ -3278,6 +3280,15 @@ function UILibrary.new(gameName, userId, rank)
     local userinfo = window.MainUI.Sidebar.ContentHolder.UserInfo.Content
     userinfo.Rank.Text = rank
     userinfo.Title.Text = userId
+
+    uisRr4932fFZ.InputBegan:Connect(function(Input , Process)
+        if Process then return end
+        if Input.KeyCode == Enum.KeyCode.P then
+            GUI.Enabled = not GUI.Enabled
+            print("Yep")
+        end
+    end)
+    
 
     return setmetatable(
         {
