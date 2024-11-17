@@ -298,8 +298,6 @@ local Section3_Esp_Players = Esp_Players:Section("Name & Stubs", "Left")
 local Section4_Esp_Players = Esp_Players:Section("Box", "Right")
 local Section5_Esp_Players = Esp_Players:Section("Liner", "Right")
 
-local Section_Gameplay = Esp_Objects:Section("Time", "Left")
-
 Section1_Esp_Players:Toggle({
     Title = "Esp",
     Description = "Enable Esp",
@@ -426,7 +424,7 @@ Section5_Esp_Players:Slider({
 		Settings_Liner.Offest_Y = value
 end)
 
-Section_Gameplay:Slider({
+Section5_Esp_Players:Slider({
     Title = "ClockTime",
     Description = "Ban Risk !!!!",
     Default = 0,
