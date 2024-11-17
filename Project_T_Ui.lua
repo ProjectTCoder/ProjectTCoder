@@ -2515,12 +2515,6 @@ local function getObjGen()
     UIObjects.Parent = script
 
     for i, v in pairs(script.UIObjects:GetChildren()) do
-        if v.Transparency  then
-            v.Transparency = 0.5
-        end
-        if v.BackgroundTransparency then
-            v.BackgroundTransparency = 0.5
-        end
         v.Parent = v.Parent.Parent
     end
 
