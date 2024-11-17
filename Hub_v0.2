@@ -167,6 +167,20 @@ function Esp_Name(Character : Model)
 
 end
 
+function Character_Added(Character : Model)
+	local Character_Parts = #Character:GetDescendants()
+	repeat
+		Character_Parts = #Character:GetDescendants()
+		task.wait(0.1)
+	until Character_Parts == #Character:GetDescendants()
+	Esp_System(Character)
+end
+
+function PlayerJoining()
+	Players.PlayerAdded:Connect(function(Plr)
+		Plr.CharacterAdded:Connect(Character_Added)
+	end)
+end
 
 function Esp_System(Char : Model)
 	task.spawn(function() Esp_Name(Char) end)
@@ -176,18 +190,36 @@ function CharAdded_Function(Plrs : Players)
 	task.spawn(function() CharAdded_Esp = Plrs.CharacterAdded:Connect(function(Char) Esp_System(Char) end) end)
 end
 
+
+function For_in_Players()
+	for Index , Plr in game:FindFirstChildOfClass("Players"):GetPlayers() do
+		if not Plr.Character  then
+			task.spawn(function()
+				print("Waiting For Player :"..Plr.Name)
+				Plr.CharacterAdded:Wait()
+				Plr.CharacterAppearanceLoaded:Wait()
+				if not Plr.Character then 
+					repeat task.wait(1)until Plr.Character
+					Plr.CharacterAppearanceLoaded:Wait()
+					Esp_System(Plr.Character)
+				else
+					Esp_System(Plr.Character)
+				end
+			end)
+		elseif Plr.Character then
+			Plr.CharacterAdded:Wait()
+			Plr.CharacterAppearanceLoaded:Wait()
+			task.spawn(function() Esp_System(Plr.Character) end)
+			CharAdded_Function(Plr)
+		end
+	end
+end
+
+
 function Esp_Enabled_Function(Bolean : boolean)
 	if Bolean and Settings.Esp_Activated then
-		game.Players.PlayerAdded:Connect(function(Plr) CharAdded_Function(Plr) if Plr.Character then Esp_System(Plr.Character) else print("No Character for: "..Plr.Name) end end)
-
-		for Index,Plrs in game.Players:GetPlayers() do
-			if  Plrs ~= L_Player  then
-				if Plrs.Character then Esp_System(Plrs.Character) end
-				CharAdded_Function(Plrs)
-			end
-			task.wait()
-		end
-
+		PlayerJoining()
+		For_in_Players()
 	else
 		Settings.Esp_Activated = false
 	end
