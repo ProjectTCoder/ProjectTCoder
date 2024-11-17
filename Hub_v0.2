@@ -63,7 +63,7 @@ end
 function Create_Esp_Liner()
 	local Esp_Liner_Visual = Drawing.new("Line")
 	Esp_Liner_Visual.Transparency = 1
-	Esp_Liner_Visual.Thickness = 1
+	Esp_Liner_Visual.Thickness = 0.5
 	Esp_Liner_Visual.Visible = false
 	return Esp_Liner_Visual
 end
@@ -276,20 +276,31 @@ function Esp_Enabled_Function(Bolean : boolean)
 
 end
 
+function Day_or_Night(Value_ : number)
+	local Lighting = game:GetService("Lighting")
+	Lighting.ClockTime = tonumber(Value_)
+end
+
 ----------------------------------------------------------------------|: Library UI Porject_T
 
 local UILib = loadstring(game:HttpGet('https://raw.githubusercontent.com/ProjectTCoder/ProjectTCoder/refs/heads/main/Project_T_Ui.lua'))()
 local Window = UILib.new("Fallen", "Hub", "</>")
 
 local Category1 = Window:Category("Esp", "http://www.roblox.com/asset/?id=86059903583211") 
+local Gameplay = Window:Category("Gameplay", "http://www.roblox.com/asset/?id=86059903583211")
+
 local Esp_Players = Category1:Button("Players", "http://www.roblox.com/asset/?id=8395621517")
 local Esp_Objects = Category1:Button("Objects", "http://www.roblox.com/asset/?id=8395621517")
+
+local Eviranement_Class = Category1:Button("Data", "http://www.roblox.com/asset/?id=8395621517")
 
 local Section1_Esp_Players = Esp_Players:Section("Enabled", "Left")
 local Section2_Esp_Players = Esp_Players:Section("Settings", "Right")
 local Section3_Esp_Players = Esp_Players:Section("Name & Stubs", "Left")
 local Section4_Esp_Players = Esp_Players:Section("Box", "Right")
 local Section5_Esp_Players = Esp_Players:Section("Liner", "Right")
+
+local Section_Gameplay = Eviranement_Class:Section("Time", "Left")
 
 Section1_Esp_Players:Toggle({
     Title = "Esp",
@@ -404,7 +415,7 @@ Section5_Esp_Players:Slider({
     Min = 1,
     Max = 100
     }, function(value)
-		Settings_Liner.Offest_X = value
+		Settings_Liner.Offest_Y = value
 end)
 
 Section5_Esp_Players:Slider({
@@ -415,4 +426,14 @@ Section5_Esp_Players:Slider({
     Max = 100
     }, function(value)
 		Settings_Liner.Offest_Y = value
+end)
+
+Section_Gameplay:Slider({
+    Title = "ClockTime",
+    Description = "Ban Risk !!!!",
+    Default = 0,
+    Min = 0,
+    Max = 23.9
+    }, function(value)
+	Day_or_Night(value)
 end)
