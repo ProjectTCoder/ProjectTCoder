@@ -18,6 +18,7 @@ Settings.Esp_Activated = false
 Settings.Distance_Stups = false
 Settings.Esp_Name_Connect = false
 Settings.Box_Esp = false
+Settings.Liner_Esp = false
 
 local Settings_Esp_Name={}
 Settings_Esp_Name.Size_ = 13
@@ -27,6 +28,11 @@ Settings_Esp_Name.Offest_X = 0
 local Settings_Box={}
 Settings_Box.Offest_Y = 0
 Settings_Box.Offest_X = 0
+
+local Settings_Liner={}
+Settings_Liner.Offest_X = 2
+Settings_Liner.Offest_Y = 100
+
 
 local PlayerAdded_Connection_esp
 local CharAdded_Esp
@@ -54,12 +60,33 @@ function Create_Esp_Box()
 	return Esp_Box_Visual
 end
 
+function Create_Esp_Liner()
+	local Esp_Liner_Visual = Drawing.new("Line")
+	Esp_Liner_Visual.Transparency = 1
+	Esp_Liner_Visual.Thickness = 1
+	Esp_Liner_Visual.Visible = false
+	return Esp_Liner_Visual
+end
+
+
 function Return_Distance_Max(Hrp_Pose : Vector3)
 	local Calcule_Distance = (Camera.CFrame.Position - Hrp_Pose).Magnitude
 	if Calcule_Distance <= Max_Distance_Calcule_Esp  then
 		return true , Calcule_Distance
 	end
 	return false , Calcule_Distance
+end
+
+function Esp_Liner_System(Visual_Liner : Liner ,Hrp_Pose : Vector3 ,Calculed_Distance : number)
+	local Position_On_Screen : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose)
+	if Valide_On_Screen then
+		print("Work")
+		Visual_Liner.From = Vector2.new(Camera.ViewportSize.X/Settings_Liner.Offest_X,Camera.ViewportSize.Y/Settings_Liner.Offest_Y)
+		Visual_Liner.To = Vector2.new(Position_On_Screen.X,Position_On_Screen.Y)
+		if not Visual_Liner.Visible then Visual_Liner.Visible = true end
+	else
+		if Visual_Liner.Visible then Visual_Liner.Visible = false end
+	end
 end
 
 function Esp_Box_System(Visual_Box : Frame , Hrp_Pose : Vector3)
@@ -122,26 +149,22 @@ function Esp_Name(Character : Model)
 	local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 	local Visual_Name = Create_Esp_Name()
 	local Visual_Box = Create_Esp_Box()
+	local Visual_Liner = Create_Esp_Liner()
 
 	local Connection1
 	local Connection2
 	local Connection3
 
 	local function check_All_Settings_Except_Activated()
-		if (Settings.Esp_Name_Connect or Settings.Box_Esp ) then return true end
+		if (Settings.Esp_Name_Connect or Settings.Box_Esp or Settings.Liner_Esp ) then return true end
 		return false
 	end
 
 	local function Break_Connection()
-		if PlayerAdded_Connection_esp then PlayerAdded_Connection_esp:Disconnect() PlayerAdded_Connection_esp = nil end
-		if CharAdded_Esp then CharAdded_Esp:Disconnect() CharAdded_Esp = nil end
-		if Connection1 then Connection1:Disconnect() Connection1 = nil end
-		if Connection2 then Connection2:Disconnect() Connection2 = nil end
-		if Connection3 then Connection3:Disconnect() Connection3 = nil end
-		if Char_Added_2 then Char_Added_2:Disconnect() Char_Added_2 = nil end
-		if PlayerAdded_1 then PlayerAdded_1:Disconnect()  PlayerAdded_1 = nil end
-		Visual_Name:Remove()
-		Visual_Box:Remove()
+		if CharAdded_Esp then CharAdded_Esp:Disconnect() CharAdded_Esp = nil end ; if Connection1 then Connection1:Disconnect() Connection1 = nil end
+		if Connection2 then Connection2:Disconnect() Connection2 = nil end ; if Connection3 then Connection3:Disconnect() Connection3 = nil end
+		if Char_Added_2 then Char_Added_2:Disconnect() Char_Added_2 = nil end 
+		Visual_Name:Remove() ; Visual_Box:Remove() ; Visual_Liner:Remove()
 	end
 
 	local function Disconnect_Esp_Name()
@@ -178,7 +201,13 @@ function Esp_Name(Character : Model)
 				Visual_Box.Visible = false
 			end
 		end
-
+		
+		if Settings.Liner_Esp and Valide_Distance  then
+			Esp_Liner_System(Visual_Liner,Hrp_Pose,Calculed_Distance)
+		else if Visual_Liner.Visible then
+				Visual_Liner.Visible = false
+			end
+		end
 
 	end)
 
@@ -241,6 +270,7 @@ function Esp_Enabled_Function(Bolean : boolean)
 		For_in_Players()
 	else
 		Settings.Esp_Activated = false
+		if PlayerAdded_1 then PlayerAdded_1:Disconnect()  PlayerAdded_1 = nil end
 	end
 
 end
@@ -259,6 +289,7 @@ local Section1_Esp_Players = Esp_Players:Section("Enabled", "Left")
 local Section2_Esp_Players = Esp_Players:Section("Settings", "Right")
 local Section3_Esp_Players = Esp_Players:Section("Name & Stubs", "Left")
 local Section4_Esp_Players = Esp_Players:Section("Box", "Right")
+local Section5_Esp_Players = Esp_Players:Section("Liner", "Right")
 
 Section1_Esp_Players:Toggle({
     Title = "Esp",
@@ -357,6 +388,34 @@ Section4_Esp_Players:Slider({
     Default = Settings_Box.Offest_Y,
     Min = -50,
     Max = 50
+    }, function(value)
+		Settings_Box.Offest_Y = value
+end)
+
+Section5_Esp_Players:Toggle({
+    Title = "Liner",
+    Description = "Add Visula Liner",
+    Default = false
+    }, function(value)
+		Settings.Liner_Esp = value
+end)
+
+Section5_Esp_Players:Slider({
+    Title = "Offest_X",
+    Description = "Ajust Offest.X",
+    Default = Settings_Liner.Offest_X,
+    Min = 1,
+    Max = 100
+    }, function(value)
+		Settings_Box.Offest_Y = value
+end)
+
+Section5_Esp_Players:Slider({
+    Title = "Offest_Y",
+    Description = "Ajust Offest.Y",
+    Default = Settings_Liner.Offest_Y,
+    Min = 1,
+    Max = 100
     }, function(value)
 		Settings_Box.Offest_Y = value
 end)
