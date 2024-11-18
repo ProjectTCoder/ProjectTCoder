@@ -104,7 +104,7 @@ function Esp_Box_System(Visual_Box : Frame , Hrp_Pose : Vector3)
 
 end
 
-function Esp_Name_System(Visual_Name : TextLabel, Hrp_Pose : Vector3,Player_Name : string, Calcule_Distance : number)
+function Esp_Name_System(Visual_Name : TextLabel, Hrp_Pose : Vector3,Player_Name : string, Calcule_Distance : number,Visual_liner : Frame)
 
 	local Position_On_Screen : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose)
 
@@ -121,8 +121,10 @@ function Esp_Name_System(Visual_Name : TextLabel, Hrp_Pose : Vector3,Player_Name
 		if not Visual_Name.Visible then Visual_Name.Visible = true end
 		if Calcule_Distance <= Alert_Distance then
 			Visual_Name.OutlineColor = Color3.fromRGB(255, 0, 4)
+			Visual_liner.Color = Color3.fromRGB(255, 0, 4)
 		else
 			Visual_Name.OutlineColor = Color3.fromRGB(0, 255, 42)
+			Visual_liner.Color = Settings_Liner.Color
 		end
 
 	else
@@ -134,18 +136,18 @@ end
 function Esp_Name(Character : Model)
 	if not Character then return end
 	local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
-	
+
 	if not HumanoidRootPart then 
-	repeat task.wait(0.5)
-		if Character then 
-		   local NewTetative = Character:FindFirstChild("HumanoidRootPart")
-		   if NewTetative then HumanoidRootPart = NewTetative end
-		elseif not Character then
-			  return
-		end
-	until HumanoidRootPart 
+		repeat task.wait(0.5)
+			if Character then 
+				local NewTetative = Character:FindFirstChild("HumanoidRootPart")
+				if NewTetative then HumanoidRootPart = NewTetative end
+			elseif not Character then
+				return
+			end
+		until HumanoidRootPart 
 	end
-	
+
 	if not Character then return end
 	local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 	local Visual_Name = Create_Esp_Name()
@@ -190,7 +192,7 @@ function Esp_Name(Character : Model)
 		local Hrp_Pose = HumanoidRootPart.Position
 		local Valide_Distance , Calculed_Distance = Return_Distance_Max(Hrp_Pose)
 		if Settings.Esp_Name_Connect or Settings.Distance_Stups and Valide_Distance then
-			Esp_Name_System(Visual_Name,Hrp_Pose,Character.Name,Calculed_Distance) 
+			Esp_Name_System(Visual_Name,Hrp_Pose,Character.Name,Calculed_Distance,Visual_Liner) 
 		else if Visual_Name.Visible then
 				Visual_Name.Visible = false
 			end
@@ -202,7 +204,7 @@ function Esp_Name(Character : Model)
 				Visual_Box.Visible = false
 			end
 		end
-		
+
 		if Settings.Liner_Esp and Valide_Distance  then
 			Esp_Liner_System(Visual_Liner,Hrp_Pose,Calculed_Distance)
 		else if Visual_Liner.Visible then
@@ -243,7 +245,7 @@ end
 function For_in_Players()
 	for Index , Plr in game:FindFirstChildOfClass("Players"):GetPlayers() do task.wait(.03)
 		task.spawn(function()
-		if not Plr.Character and Plr ~= L_Player  then
+			if not Plr.Character and Plr ~= L_Player  then
 				--print("Waiting For Player :"..Plr.Name)
 				local Tentative = 0
 				if not Plr.Character then 
@@ -254,10 +256,10 @@ function For_in_Players()
 					CharAdded_Function(Plr)
 					Esp_System(Plr.Character)
 				end
-		elseif Plr.Character and Plr ~= L_Player then
-			task.spawn(function() Esp_System(Plr.Character) end)
-			CharAdded_Function(Plr)
-		end
+			elseif Plr.Character and Plr ~= L_Player then
+				task.spawn(function() Esp_System(Plr.Character) end)
+				CharAdded_Function(Plr)
+			end
 		end)
 	end
 end
@@ -266,7 +268,7 @@ end
 function Esp_Enabled_Function(Bolean : boolean)
 	if Bolean and Settings.Esp_Activated then
 		task.spawn(function()
-		PlayerJoining()
+			PlayerJoining()
 		end)
 		For_in_Players()
 	else
@@ -280,6 +282,7 @@ function Day_or_Night(Value_ : number)
 	local Lighting = game:GetService("Lighting")
 	Lighting.ClockTime = tonumber(Value_)
 end
+
 
 ----------------------------------------------------------------------|: Library UI Porject_T
 
