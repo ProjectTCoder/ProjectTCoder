@@ -11,6 +11,7 @@ local function getObjGen()
                 Cheats = Instance.new("Folder"),
                 Button = Instance.new("Frame"),
                 UICorner = Instance.new("UICorner"),
+
                 DropShadowHolder = Instance.new("Frame"),
                 DropShadow = Instance.new("ImageLabel"),
                 Text = Instance.new("TextLabel"),
@@ -1373,8 +1374,8 @@ local function getObjGen()
             Gui.Logo.LayoutOrder = -5
             Gui.Logo.Size = UDim2.new(1, 0, 0.100000001, 0)
             Gui.Logo.ZIndex = 122
-            Gui.Logo.Image = "http://www.roblox.com/asset/?id=130482892330329"
-            Gui.Logo.ImageColor3 = Color3.fromRGB(1,1,1)
+            Gui.Logo.Image = "http://www.roblox.com/asset/?id=86671316411314"
+            Gui.Logo.ImageColor3 = Color3.fromRGB(134, 142, 255)
             Gui.Logo.ScaleType = Enum.ScaleType.Fit
 
             Gui.UIGradient_5.Color =
@@ -2674,13 +2675,13 @@ local function getDragIt()
         local TWS = game:GetService("TweenService")
         local Utils = initUtils()
 
-        local Player = game.Players.LocalPlayer
+        local Player = game:WaitForChild("Players").LocalPlayer
         local Mouse = Player:GetMouse()
         local drag = {}
         local Events = {}
         local Holding = false
         local Hovering = false
-        local camera = workspace.CurrentCamera.ViewportSize
+        local camera = game:WaitForChild("workspace").CurrentCamera.ViewportSize
         local centre = Vector2.new(camera.X / 2, camera.Y / 2)
         local Tween
         local RenderConnection
@@ -3182,11 +3183,11 @@ local EffectLib = getEffect()
 local CircleClick = function(Button)
     local circle = Instance.new("Frame");
     Instance.new("UICorner", circle);
-    
+    local Player_mouse = game:WaitForChild("Players").LocalPlayer:GetMouse()
     circle.UICorner.CornerRadius = UDim.new(1, 0);
     circle.AnchorPoint = Vector2.new(0.5, 0.5);
     circle.BackgroundColor3 = Color3.fromRGB(0,0,0);
-    circle.Position = UDim2.new(0, game.Players.LocalPlayer:GetMouse().X - Button.AbsolutePosition.X, 0, game.Players.LocalPlayer:GetMouse().Y - Button.AbsolutePosition.Y);
+    circle.Position = UDim2.new(0, Player_mouse.X - Button.AbsolutePosition.X, 0, Player_mouse.Y - Button.AbsolutePosition.Y);
     circle.Size = UDim2.new(0, 1, 0, 1);
     circle.Transparency = .8;
     circle.ZIndex = 999
@@ -3197,7 +3198,7 @@ local CircleClick = function(Button)
     finalGoal.Size = UDim2.new(0, (Button.AbsoluteSize.X), 0, (Button.AbsoluteSize.X));
     finalGoal.Transparency = 1;
     
-    game.Debris:AddItem(circle,.4)
+    game:GetService("Debris"):AddItem(circle,.4)
     
     local tween = game:GetService("TweenService"):Create(circle, TweenInfo.new(.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), finalGoal);
     tween:Play();
@@ -3244,7 +3245,7 @@ function UILibrary.new(gameName, userId, rank)
     local GUI = Instance.new("ScreenGui")
     GUI.Name = HttpService:GenerateGUID(false)
     GUI.Parent =
-        RunService:IsStudio() == false and game:GetService("CoreGui") --or LocalPlayer:WaitForChild("PlayerGui")
+     RunService:IsStudio() == false and game:GetService("CoreGui") --or LocalPlayer:WaitForChild("PlayerGui")
     GUI.ResetOnSpawn = false
     GUI.ZIndexBehavior = Enum.ZIndexBehavior.Global
 
