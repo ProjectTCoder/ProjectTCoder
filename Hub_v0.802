@@ -427,7 +427,7 @@ end)
 Section5_Esp_Players:Slider({
     Title = "ClockTime",
     Description = "Ban Risk !!!!",
-    Default = 0,
+    --Default = 0,
     Min = 0,
     Max = 23.9
     }, function(value)
