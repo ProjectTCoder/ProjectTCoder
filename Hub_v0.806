@@ -1,7 +1,7 @@
 local Run_ = game:GetService("RunService")
 local Players = game:GetService("Players")
 local L_Player = Players.LocalPlayer
-local Camera = game:WaitForChild("Workspace").CurrentCamera
+local Camera = game:GetService("Workspace").CurrentCamera
 local WorldToViewportPoint = Camera.WorldToViewportPoint
 
 local HeadOff = Vector3.new(0,1.5,0)
