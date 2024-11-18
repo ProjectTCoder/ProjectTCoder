@@ -431,5 +431,6 @@ Section5_Esp_Players:Slider({
     Min = 0,
     Max = 23.9
     }, function(value)
+        print("Action")
 	Day_or_Night(value)
 end)
