@@ -220,9 +220,9 @@ function Esp_Name(Character : Model)
 			Break_Connection()
 		end)
 		Connection4 = Humanoid.HealthChanged:Connect(function(New_Health)
-			Visual_Health.Text = "[ "..tostring(New_Health).." ]"
+			Visual_Health.Text = "[ "..tostring(math.floor(New_Health)).." ]"
 		end)
-		Visual_Health.Text = "[ "..tostring(Humanoid.Health).." ]"
+		Visual_Health.Text = "[ "..tostring(math.floor(Humanoid.Health)).." ]"
 	end
 
 	Connection1 = Run_.Heartbeat:Connect(function() if not Settings.Esp_Activated then Disconnect_Esp_Name() end
