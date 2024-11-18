@@ -1,7 +1,7 @@
 local Run_ = game:GetService("RunService")
-local Players = game:GetService("Players")
+local Players = game:WaitForChild("Players")
 local L_Player = Players.LocalPlayer
-local Camera = game:GetService("Workspace").CurrentCamera
+local Camera = game:WaitForChild("Workspace").CurrentCamera
 local WorldToViewportPoint = Camera.WorldToViewportPoint
 
 local HeadOff = Vector3.new(0,1.5,0)
@@ -31,7 +31,7 @@ Settings_Box.Color = Color3.new(0.317647, 0, 1)
 local Settings_Liner={}
 Settings_Liner.Color = Color3.new(1, 1, 1)
 Settings_Liner.Offest_X = 2
-Settings_Liner.Offest_Y = 100
+Settings_Liner.Offest_Y = 200
 
 
 local PlayerAdded_Connection_esp
@@ -283,20 +283,24 @@ end
 
 ----------------------------------------------------------------------|: Library UI Porject_T
 
-local UILib = loadstring(game:HttpGet('https://raw.githubusercontent.com/ProjectTCoder/ProjectTCoder/refs/heads/main/Ui_Library_v0.1'))()
+local UILib = loadstring(game:HttpGet('https://raw.githubusercontent.com/ProjectTCoder/ProjectTCoder/refs/heads/main/Project_T_Ui.lua'))()
 local Window = UILib.new("Fallen", "Hub", "</>")
 
-local Category1 = Window:Category("Esp", "http://www.roblox.com/asset/?id=86059903583211") 
+local Category1 = Window:Category("Esp", "http://www.roblox.com/asset/?id=86059903583211")
+local Category_Gameplay = Window:Category("Gameplay", "http://www.roblox.com/asset/?id=86059903583211")
 
 local Esp_Players = Category1:Button("Players", "http://www.roblox.com/asset/?id=8395621517")
 local Esp_Objects = Category1:Button("Objects", "http://www.roblox.com/asset/?id=8395621517")
 
+local Gameplay_Button = Category_Gameplay:Button("Lighting", "http://www.roblox.com/asset/?id=8395621517")
 
 local Section1_Esp_Players = Esp_Players:Section("Enabled", "Left")
 local Section2_Esp_Players = Esp_Players:Section("Settings", "Right")
 local Section3_Esp_Players = Esp_Players:Section("Name & Stubs", "Left")
 local Section4_Esp_Players = Esp_Players:Section("Box", "Right")
 local Section5_Esp_Players = Esp_Players:Section("Liner", "Right")
+
+local Section1_Gameplay = Gameplay_Button:Section("Enabled", "Left")
 
 Section1_Esp_Players:Toggle({
     Title = "Esp",
@@ -411,7 +415,7 @@ Section5_Esp_Players:Slider({
     Min = 1,
     Max = 100
     }, function(value)
-		Settings_Liner.Offest_Y = value
+		Settings_Liner.Offest_X = value
 end)
 
 Section5_Esp_Players:Slider({
@@ -424,13 +428,12 @@ Section5_Esp_Players:Slider({
 		Settings_Liner.Offest_Y = value
 end)
 
-Section5_Esp_Players:Slider({
+Section1_Gameplay:Slider({
     Title = "ClockTime",
     Description = "Ban Risk !!!!",
     --Default = 0,
     Min = 0,
     Max = 23.9
     }, function(value)
-        print("Action : ",value)
 	Day_or_Night(value)
 end)
