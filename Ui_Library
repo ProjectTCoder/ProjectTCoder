@@ -2675,7 +2675,7 @@ local function getDragIt()
         local TWS = game:GetService("TweenService")
         local Utils = initUtils()
 
-        local Player = game:WaitForChild("Players").LocalPlayer
+        local Player = game:GetService("Players").LocalPlayer
         local Mouse = Player:GetMouse()
         local drag = {}
         local Events = {}
@@ -3183,7 +3183,7 @@ local EffectLib = getEffect()
 local CircleClick = function(Button)
     local circle = Instance.new("Frame");
     Instance.new("UICorner", circle);
-    local Player_mouse = game:WaitForChild("Players").LocalPlayer:GetMouse()
+    local Player_mouse = game:GetService("Players").LocalPlayer:GetMouse()
     circle.UICorner.CornerRadius = UDim.new(1, 0);
     circle.AnchorPoint = Vector2.new(0.5, 0.5);
     circle.BackgroundColor3 = Color3.fromRGB(0,0,0);
