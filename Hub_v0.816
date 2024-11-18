@@ -159,7 +159,7 @@ function Esp_Health_System(Visual_Health : TextLabel, Hrp_Pose : Vector3 , Human
 		Visual_Health.Position = Vector2.new((Position_On_Screen.X+Settings_Health.Offest_X),(Position_On_Screen.Y+Settings_Health.Offest_Y))
 		if not Visual_Health.Visible then Visual_Health.Visible = true end
 	else
-		if not Visual_Health.Visible then Visual_Health.Visible = false end
+		if Visual_Health.Visible then Visual_Health.Visible = false end
 	end
 
 end
