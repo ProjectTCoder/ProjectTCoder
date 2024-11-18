@@ -2545,7 +2545,7 @@ local objectGenerator = getObjGen()
 
 local function initUtils()
     local utils = {}
-    local camera = workspace.CurrentCamera.ViewportSize
+    local camera = game:GetService("Workspace").CurrentCamera.ViewportSize
     local centre = Vector2.new(camera.X/2, camera.Y/2)
 
     utils.OffsetToScale = function(Offset)
@@ -2681,7 +2681,7 @@ local function getDragIt()
         local Events = {}
         local Holding = false
         local Hovering = false
-        local camera = game.workspace.CurrentCamera.ViewportSize
+        local camera = game:GetService("Workspace").CurrentCamera.ViewportSize
         local centre = Vector2.new(camera.X / 2, camera.Y / 2)
         local Tween
         local RenderConnection
