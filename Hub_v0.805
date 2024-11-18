@@ -1,5 +1,5 @@
 local Run_ = game:GetService("RunService")
-local Players = game:WaitForChild("Players")
+local Players = game:GetService("Players")
 local L_Player = Players.LocalPlayer
 local Camera = game:WaitForChild("Workspace").CurrentCamera
 local WorldToViewportPoint = Camera.WorldToViewportPoint
