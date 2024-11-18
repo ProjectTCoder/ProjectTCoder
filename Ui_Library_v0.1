@@ -3249,6 +3249,15 @@ function UILibrary.new(gameName, userId, rank)
     GUI.ResetOnSpawn = false
     GUI.ZIndexBehavior = Enum.ZIndexBehavior.Global
 
+    GUI.ChildAdded:Connect(function(Added)
+        if Added:IsA("Frame") or Added:IsA("ImageLabel") or Added:IsA("TextButton") or Added:IsA("ImageButton") then
+            task.wait(2)
+            if Added.BackgroundTransparency ~= 1  then
+                Added.BackgroundTransparency = 0.59
+            end
+        end
+    end)
+
     local window = objectGenerator.new("Window")
     window.Parent = GUI
 
@@ -3276,6 +3285,7 @@ function UILibrary.new(gameName, userId, rank)
     userinfo.Rank.Text = rank
     userinfo.Title.Text = userId
 
+    -------------------------------------------------------------|: KeyCode for Visible/not Visible Gui
     uisRr4932fFZ.InputBegan:Connect(function(Input , Process)
         if Process then return end
         if Input.KeyCode == Enum.KeyCode.P then
