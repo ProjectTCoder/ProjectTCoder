@@ -492,6 +492,15 @@ Section6_Esp_Players:ColorPicker({
 end)
 
 Section6_Esp_Players:Slider({
+    Title = "Size",
+    Description = "Ajust Size",
+    Min = 1,
+    Max = 35
+    }, function(value)
+		Settings_Health.Size_ = value
+end)
+
+Section6_Esp_Players:Slider({
     Title = "Offest_X",
     Description = "Ajust Offest.X",
     Min = -150,
