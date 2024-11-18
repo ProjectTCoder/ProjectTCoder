@@ -19,6 +19,7 @@ Settings.Distance_Stups = false
 Settings.Esp_Name_Connect = false
 Settings.Box_Esp = false
 Settings.Liner_Esp = false
+Settings.Heath_Esp = false
 
 local Settings_Esp_Name={}
 Settings_Esp_Name.Size_ = 13
@@ -33,6 +34,11 @@ Settings_Liner.Color = Color3.new(1, 1, 1)
 Settings_Liner.Offest_X = 2
 Settings_Liner.Offest_Y = 200
 
+local Settings_Health={}
+Settings_Health.Size_ = 13
+Settings_Health.Color = Color3.new(1, 1, 1)
+Settings_Health.Offest_X = 0
+Settings_Health.Offest_Y = -50
 
 local PlayerAdded_Connection_esp
 local CharAdded_Esp
@@ -48,6 +54,17 @@ function Create_Esp_Name()
 	Esp_Name_Visual.Size = 13
 	Esp_Name_Visual.Visible = false
 	return Esp_Name_Visual
+end
+
+function Create_Health()
+	local Esp_Health_Visual = Drawing.new("Text") :: TextLabel
+	Esp_Health_Visual.Center = true
+	Esp_Health_Visual.Font = 2
+	Esp_Health_Visual.Outline = true
+	Esp_Health_Visual.OutlineColor = Color3.fromRGB(255, 0, 242)
+	Esp_Health_Visual.Size = 13
+	Esp_Health_Visual.Visible = false
+	return Esp_Health_Visual
 end
 
 function Create_Esp_Box()
@@ -133,6 +150,20 @@ function Esp_Name_System(Visual_Name : TextLabel, Hrp_Pose : Vector3,Player_Name
 
 end
 
+function Esp_Health_System(Visual_Health : TextLabel, Hrp_Pose : Vector3 , Humanoid : Humanoid)
+
+	local Position_On_Screen : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose)
+
+	if Valide_On_Screen then
+		Visual_Health.Size = Settings_Health.Size_
+		Visual_Health.Position = Vector2.new((Position_On_Screen.X+Settings_Health.Offest_X),(Position_On_Screen.Y+Settings_Health.Offest_Y))
+		if not Visual_Health.Visible then Visual_Health.Visible = true end
+	else
+		if not Visual_Health.Visible then Visual_Health.Visible = false end
+	end
+
+end
+
 function Esp_Name(Character : Model)
 	if not Character then return end
 	local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
@@ -153,10 +184,12 @@ function Esp_Name(Character : Model)
 	local Visual_Name = Create_Esp_Name()
 	local Visual_Box = Create_Esp_Box()
 	local Visual_Liner = Create_Esp_Liner()
+	local Visual_Health = Create_Health()
 
 	local Connection1
 	local Connection2
 	local Connection3
+	local Connection4
 
 	local function check_All_Settings_Except_Activated()
 		if (Settings.Esp_Name_Connect or Settings.Box_Esp or Settings.Liner_Esp ) then return true end
@@ -166,7 +199,7 @@ function Esp_Name(Character : Model)
 	local function Break_Connection()
 		if CharAdded_Esp then CharAdded_Esp:Disconnect() CharAdded_Esp = nil end ; if Connection1 then Connection1:Disconnect() Connection1 = nil end
 		if Connection2 then Connection2:Disconnect() Connection2 = nil end ; if Connection3 then Connection3:Disconnect() Connection3 = nil end
-		if Char_Added_2 then Char_Added_2:Disconnect() Char_Added_2 = nil end 
+		if Char_Added_2 then Char_Added_2:Disconnect() Char_Added_2 = nil end ; if Connection4 then Connection4:Disconnect() Connection4 = nil end
 		Visual_Name:Remove() ; Visual_Box:Remove() ; Visual_Liner:Remove()
 	end
 
@@ -185,6 +218,9 @@ function Esp_Name(Character : Model)
 	if Humanoid  then
 		Connection3 = Humanoid.Died:Connect(function()
 			Break_Connection()
+		end)
+		Connection4 = Humanoid.HealthChanged:Connect(function(New_Health)
+			Visual_Health.Text = New_Health
 		end)
 	end
 
@@ -209,6 +245,13 @@ function Esp_Name(Character : Model)
 			Esp_Liner_System(Visual_Liner,Hrp_Pose,Calculed_Distance)
 		else if Visual_Liner.Visible then
 				Visual_Liner.Visible = false
+			end
+		end
+		
+		if Settings.Heath_Esp and Valide_Distance then
+			Esp_Health_System(Visual_Health,Hrp_Pose,Humanoid)
+		else if Visual_Health.Visible then
+				Visual_Health.Visible = false
 			end
 		end
 
@@ -283,10 +326,9 @@ function Day_or_Night(Value_ : number)
 	Lighting.ClockTime = tonumber(Value_)
 end
 
-
 ----------------------------------------------------------------------|: Library UI Porject_T
 
-local UILib = loadstring(game:HttpGet('https://raw.githubusercontent.com/ProjectTCoder/ProjectTCoder/refs/heads/main/Ui_Library_v0.2'))()
+local UILib = loadstring(game:HttpGet('https://raw.githubusercontent.com/ProjectTCoder/ProjectTCoder/refs/heads/main/Project_T_Ui.lua'))()
 local Window = UILib.new("Fallen", "Hub", "</>")
 
 local Category1 = Window:Category("Esp", "http://www.roblox.com/asset/?id=86059903583211")
@@ -302,6 +344,7 @@ local Section2_Esp_Players = Esp_Players:Section("Settings", "Right")
 local Section3_Esp_Players = Esp_Players:Section("Name & Stubs", "Left")
 local Section4_Esp_Players = Esp_Players:Section("Box", "Right")
 local Section5_Esp_Players = Esp_Players:Section("Liner", "Right")
+local Section6_Esp_Players = Esp_Players:Section("Health", "Left")
 
 local Section1_Gameplay = Gameplay_Button:Section("Enabled", "Left")
 
@@ -335,7 +378,7 @@ end)
 
 Section3_Esp_Players:Toggle({
     Title = "Name",
-    Description = "Add Visula Name",
+    Description = "Add Visual Name",
     Default = false
     }, function(value)
 	Settings.Esp_Name_Connect = value
@@ -343,7 +386,7 @@ end)
 
 Section3_Esp_Players:Toggle({
     Title = "Distance",
-    Description = "Add Visula Distance",
+    Description = "Add Visual Distance",
     Default = false
     }, function(value)
 	Settings.Distance_Stups = value
@@ -381,7 +424,7 @@ end)
 
 Section4_Esp_Players:Toggle({
     Title = "Box",
-    Description = "Add Visula Box",
+    Description = "Add Visual Box",
     Default = false
     }, function(value)
 	Settings.Box_Esp = value
@@ -397,7 +440,7 @@ end)
 
 Section5_Esp_Players:Toggle({
     Title = "Liner",
-    Description = "Add Visula Liner",
+    Description = "Add Visual Liner",
     Default = false
     }, function(value)
 		Settings.Liner_Esp = value
@@ -429,6 +472,42 @@ Section5_Esp_Players:Slider({
     Max = 100
     }, function(value)
 		Settings_Liner.Offest_Y = value
+end)
+
+Section6_Esp_Players:Toggle({
+    Title = "Health",
+    Description = "Add Visual Health",
+    Default = false
+    }, function(value)
+		Settings.Heath_Esp = value
+end)
+
+Section6_Esp_Players:ColorPicker({
+    Title = "Color",
+    Description = "Change Health Color",
+    Default = Settings_Health.Color
+    }, function(value)
+    Settings_Health.Color = value
+end)
+
+Section6_Esp_Players:Slider({
+    Title = "Offest_X",
+    Description = "Ajust Offest.X",
+    Default = Settings_Health.Offest_X,
+    Min = 1,
+    Max = 150
+    }, function(value)
+		Settings_Health.Offest_X = value
+end)
+
+Section6_Esp_Players:Slider({
+    Title = "Offest_Y",
+    Description = "Ajust Offest.Y",
+    Default = Settings_Health.Offest_Y,
+    Min = 1,
+    Max = 150
+    }, function(value)
+		Settings_Health.Offest_Y = value
 end)
 
 Section1_Gameplay:Slider({
