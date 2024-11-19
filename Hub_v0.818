@@ -163,8 +163,8 @@ function Esp_Health_System(Visual_Health : TextLabel, Hrp_Pose : Vector3 , Human
 
 end
 
-function CharAdded_Function(Plrs : Players , CharAdded_Esp : RBXScriptConnection)
-	task.spawn(function() CharAdded_Esp = Plrs.CharacterAdded:Connect(function(Char) Esp_System(Plrs,Char) end) end)
+function CharAdded_Function(Plrs : Players , Connection_Character : RBXScriptConnection)
+	task.spawn(function() Connection_Character = Plrs.CharacterAdded:Connect(function(Char) Esp_System(Plrs,Char) end) end)
 end
 
 function Esp_Name(Plr : Player ,Character : Model)
@@ -193,9 +193,9 @@ function Esp_Name(Plr : Player ,Character : Model)
 	local Connection2
 	local Connection3
 	local Connection4
-	local CharAdded_Esp
+	local Connection_Character = nil
 	
-	CharAdded_Function(Plr,CharAdded_Esp)
+	CharAdded_Function(Plr,Connection_Character)
 
 	local function check_All_Settings_Except_Activated()
 		if (Settings.Esp_Name_Connect or Settings.Box_Esp or Settings.Liner_Esp ) then return true end
@@ -203,14 +203,15 @@ function Esp_Name(Plr : Player ,Character : Model)
 	end
 
 	local function Break_Connection()
-		if CharAdded_Esp then CharAdded_Esp:Disconnect() CharAdded_Esp = nil end ; if Connection1 then Connection1:Disconnect() Connection1 = nil end
+		if Connection1 then Connection1:Disconnect() Connection1 = nil end
 		if Connection2 then Connection2:Disconnect() Connection2 = nil end ; if Connection3 then Connection3:Disconnect() Connection3 = nil end
-		if Char_Added_2 then Char_Added_2:Disconnect() Char_Added_2 = nil end ; if Connection4 then Connection4:Disconnect() Connection4 = nil end
+	    if Connection4 then Connection4:Disconnect() Connection4 = nil end
 		Visual_Name:Remove() ; Visual_Box:Remove() ; Visual_Liner:Remove() ; Visual_Health:Remove()
 	end
 
 	local function Disconnect_Esp_Name()
 		if not Settings.Esp_Activated then 
+			if Connection_Character then Connection_Character:Disconnect() Connection_Character = nil end
 			Break_Connection()
 		elseif not check_All_Settings_Except_Activated() then
 			Break_Connection()
@@ -267,6 +268,8 @@ function Esp_Name(Plr : Player ,Character : Model)
 end
 
 function Character_Added(Plr : Player ,Character : Model)
+	if not Character then Character = Plr.Character or Plr.CharacterAdded:Wait() end
+	if not Character then return end
 	local Character_Parts = #Character:GetDescendants()
 	repeat
 		Character_Parts = #Character:GetDescendants()
@@ -289,6 +292,8 @@ function PlayerJoining()
 	end)
 end
 
+
+
 function For_in_Players()
 	for Index , Plr in game:FindFirstChildOfClass("Players"):GetPlayers() do task.wait(.03)
 		task.spawn(function()
@@ -296,18 +301,17 @@ function For_in_Players()
 				--print("Waiting For Player :"..Plr.Name)
 				local Tentative = 0
 				if not Plr.Character then 
-					repeat task.wait(1) Tentative += 1 until Plr.Character or Tentative >= 3
-					Esp_System(Plr,Plr.Character)
+					repeat task.wait(1) Tentative += 1 until Plr.Character or Tentative >= 5
+					Character_Added(Plr,Plr.Character)
 				else
-					Esp_System(Plr,Plr.Character)
+					Character_Added(Plr,Plr.Character)
 				end
 			elseif Plr.Character and Plr ~= L_Player then
-				task.spawn(function() Esp_System(Plr,Plr.Character) end)
+				task.spawn(function() Character_Added(Plr,Plr.Character) end)
 			end
 		end)
 	end
 end
-
 
 function Esp_Enabled_Function(Bolean : boolean)
 	if Bolean and Settings.Esp_Activated then
@@ -318,6 +322,7 @@ function Esp_Enabled_Function(Bolean : boolean)
 	else
 		Settings.Esp_Activated = false
 		if PlayerAdded_1 then PlayerAdded_1:Disconnect()  PlayerAdded_1 = nil end
+		if Char_Added_2 then Char_Added_2:Disconnect()  Char_Added_2 = nil end
 	end
 
 end
@@ -326,6 +331,7 @@ function Day_or_Night(Value_ : number)
 	local Lighting = game:GetService("Lighting")
 	Lighting.ClockTime = tonumber(Value_)
 end
+
 
 ----------------------------------------------------------------------|: Library UI Porject_T
 
