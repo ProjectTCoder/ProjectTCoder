@@ -40,8 +40,7 @@ Settings_Health.Color = Color3.new(1, 1, 1)
 Settings_Health.Offest_X = 0
 Settings_Health.Offest_Y = -50
 
-local PlayerAdded_Connection_esp
-local CharAdded_Esp
+--local CharAdded_Esp
 local Char_Added_2
 local PlayerAdded_1
 
@@ -164,7 +163,11 @@ function Esp_Health_System(Visual_Health : TextLabel, Hrp_Pose : Vector3 , Human
 
 end
 
-function Esp_Name(Character : Model)
+function CharAdded_Function(Plrs : Players , CharAdded_Esp : RBXScriptConnection)
+	task.spawn(function() CharAdded_Esp = Plrs.CharacterAdded:Connect(function(Char) Esp_System(Plrs,Char) end) end)
+end
+
+function Esp_Name(Plr : Player ,Character : Model)
 	if not Character then return end
 	local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
 
@@ -190,6 +193,9 @@ function Esp_Name(Character : Model)
 	local Connection2
 	local Connection3
 	local Connection4
+	local CharAdded_Esp
+	
+	CharAdded_Function(Plr,CharAdded_Esp)
 
 	local function check_All_Settings_Except_Activated()
 		if (Settings.Esp_Name_Connect or Settings.Box_Esp or Settings.Liner_Esp ) then return true end
@@ -248,7 +254,7 @@ function Esp_Name(Character : Model)
 				Visual_Liner.Visible = false
 			end
 		end
-		
+
 		if Settings.Heath_Esp and Valide_Distance then
 			Esp_Health_System(Visual_Health,Hrp_Pose,Humanoid)
 		else if Visual_Health.Visible then
@@ -260,31 +266,28 @@ function Esp_Name(Character : Model)
 
 end
 
-function Character_Added(Character : Model)
+function Character_Added(Plr : Player ,Character : Model)
 	local Character_Parts = #Character:GetDescendants()
 	repeat
 		Character_Parts = #Character:GetDescendants()
 		task.wait(0.1)
 	until Character_Parts == #Character:GetDescendants()
-	Esp_System(Character)
+	Esp_System(Plr,Character)
+end
+
+function Esp_System(Plrs : Player ,Char : Model)
+	if Settings.Esp_Activated and Char then
+		task.spawn(function() Esp_Name(Plrs,Char) end)
+	end
 end
 
 function PlayerJoining()
 	PlayerAdded_1 = Players.PlayerAdded:Connect(function(Plr)
-		Char_Added_2 = Plr.CharacterAdded:Connect(Character_Added)
+		Char_Added_2 = Plr.CharacterAdded:Connect(function(Char)
+			Character_Added(Plr,Char)
+		end)
 	end)
 end
-
-function Esp_System(Char : Model)
-	if Settings.Esp_Activated and Char then
-		task.spawn(function() Esp_Name(Char) end)
-	end
-end
-
-function CharAdded_Function(Plrs : Players)
-	task.spawn(function() CharAdded_Esp = Plrs.CharacterAdded:Connect(function(Char) Esp_System(Char) end) end)
-end
-
 
 function For_in_Players()
 	for Index , Plr in game:FindFirstChildOfClass("Players"):GetPlayers() do task.wait(.03)
@@ -294,15 +297,12 @@ function For_in_Players()
 				local Tentative = 0
 				if not Plr.Character then 
 					repeat task.wait(1) Tentative += 1 until Plr.Character or Tentative >= 3
-					Esp_System(Plr.Character)
-					CharAdded_Function(Plr)
+					Esp_System(Plr,Plr.Character)
 				else
-					CharAdded_Function(Plr)
-					Esp_System(Plr.Character)
+					Esp_System(Plr,Plr.Character)
 				end
 			elseif Plr.Character and Plr ~= L_Player then
-				task.spawn(function() Esp_System(Plr.Character) end)
-				CharAdded_Function(Plr)
+				task.spawn(function() Esp_System(Plr,Plr.Character) end)
 			end
 		end)
 	end
