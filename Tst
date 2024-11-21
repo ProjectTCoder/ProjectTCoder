@@ -1,0 +1,545 @@
+local Players = game:GetService("Players")
+local Wrk = game:GetService("Workspace")
+local L_Player = Players.LocalPlayer
+local Camera = Wrk.CurrentCamera
+local WorldToViewportPoint = Camera.WorldToViewportPoint
+local CameraX = Camera.ViewportSize.X
+
+local WhiteList_={string}
+WhiteList_[L_Player.Name] = true
+
+local HeadOff = Vector3.new(0,1.5,0)
+local Legoff = Vector3.new(0,4,0)
+
+local Settings={}
+Settings.Esp = true
+Settings.Calculing_Distance = 1500
+Settings.Speed_Calculing = 0
+Settings.Alert_Distance = 150
+Settings.Aler_Color = Color3.new(1, 0, 0)
+
+local Add_Visual={}
+Add_Visual.Distance = true
+Add_Visual.Name = false
+Add_Visual.Health = true
+Add_Visual.Box = false
+Add_Visual.Liner = false
+Add_Visual.Circle = true
+Add_Visual.RayCast = true
+
+local Name_Settings={}
+Name_Settings.Color = Color3.new(1, 1, 1)
+Name_Settings.Size = 14
+Name_Settings.OffestX = 0
+Name_Settings.OffestY = -70
+
+local Health_Settings={}
+Health_Settings.Color_Under_100 = Color3.new(0, 1, 0.0823529)
+Health_Settings.Color_Under_70 = Color3.new(0.984314, 1, 0)
+Health_Settings.Color_Under_40 = Color3.new(1, 0, 0.0156863)
+Health_Settings.Size = 14
+Health_Settings.OffestX = -60
+Health_Settings.OffestY = -70
+
+local Box_Settings={}
+Box_Settings.Color = Color3.new(1, 1, 1)
+Box_Settings.Size = 50
+
+local Liner_Settings={}
+Liner_Settings.Color = Color3.new(1, 1, 1)
+Liner_Settings.Aler_Color = true
+Liner_Settings.OffestX = -60
+Liner_Settings.OffestY = -70
+
+local Circle_Settings={}
+Circle_Settings.RayCast = true
+Circle_Settings.Color = Color3.new(1, 1, 1)
+Circle_Settings.RayCastColor = Color3.new(0.0156863, 1, 0)
+Circle_Settings.Minimum_Size = 3
+Circle_Settings.Maximum_Size = 10
+
+
+local Connections_Global={}
+
+function Create_Esp_Name()
+	local Esp_Name_Visual = Drawing.new("Text")
+	Esp_Name_Visual.Center = true
+	Esp_Name_Visual.Font = 2
+	Esp_Name_Visual.Outline = true
+	Esp_Name_Visual.OutlineColor = Name_Settings.Color
+	Esp_Name_Visual.Size = 13
+	Esp_Name_Visual.Visible = false
+	return Esp_Name_Visual
+end
+
+function Create_Health()
+	local Esp_Health_Visual = Drawing.new("Text")
+	Esp_Health_Visual.Center = true
+	Esp_Health_Visual.Font = 2
+	Esp_Health_Visual.Outline = true
+	Esp_Health_Visual.OutlineColor = Color3.fromRGB(255, 0, 242)
+	Esp_Health_Visual.Size = 13
+	Esp_Health_Visual.Visible = false
+	return Esp_Health_Visual
+end
+
+function Create_Esp_Box()
+	local Esp_Box_Visual = Drawing.new("Square")
+	Esp_Box_Visual.Transparency = 1
+	Esp_Box_Visual.Thickness = 1
+	Esp_Box_Visual.Filled = false
+	Esp_Box_Visual.Visible = false
+	Esp_Box_Visual.Color = Color3.fromRGB(255, 0, 255)
+	return Esp_Box_Visual
+end
+
+function Create_Esp_Liner()
+	local Esp_Liner_Visual = Drawing.new("Line")
+	Esp_Liner_Visual.Transparency = 1
+	Esp_Liner_Visual.Thickness = 1
+	Esp_Liner_Visual.Visible = false
+	return Esp_Liner_Visual
+end
+
+function Create_Esp_Circle()
+	local Esp_Circle_Visual = Drawing.new("Circle")
+	Esp_Circle_Visual.Transparency = 1
+	Esp_Circle_Visual.Thickness = 2
+	Esp_Circle_Visual.NumSides = 64
+	Esp_Circle_Visual.Filled = false
+	Esp_Circle_Visual.Color = Color3.new(1, 1, 1)
+	return Esp_Circle_Visual
+end
+
+local LocalCharacter = L_Player.Character or L_Player.CharacterAdded:Wait()
+
+function Fin_Humanoid(Character: Model): Humanoid | nil
+	local Humanoid = Character:FindFirstChild("Humanoid")
+	local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
+	local Attempts = 0
+	while not Humanoid or not HumanoidRootPart and Attempts < 10 do
+		task.wait(0.8)
+		Humanoid = Character:FindFirstChild("Humanoid")
+		HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
+		Attempts += 1
+	end
+	if Attempts >= 15 then return nil end
+	return Humanoid , HumanoidRootPart
+end
+
+function Return_Humanoid_and_RootPart(player: Player, Character: Model)
+	if not player or not player:IsA("Player") then
+		return nil, nil, nil -- Si le player n'est pas valide, retourne nil
+	end
+	local Head
+	local character 
+	local humanoid , humanoidRootPart
+	local attempts = 0
+	local maxAttempts = 150
+	if Character and Players:GetPlayerFromCharacter(Character) then
+		character = Character
+	else
+		character = player.Character or player.CharacterAdded:Wait()
+	end
+
+	while attempts < maxAttempts do
+		if not character then
+			character = player.Character
+		end
+
+		if character then
+			if not humanoid then
+				humanoid = character:FindFirstChildOfClass("Humanoid")
+			end
+			if not humanoidRootPart then
+				humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+			end
+			if not Head then
+				Head = character:FindFirstChild("Head")
+			end
+		end
+		if character and humanoid and humanoidRootPart and Head then
+			break
+		end
+
+		task.wait(0.1)
+		attempts += 1
+	end
+	
+	if not (character or humanoid or humanoidRootPart or Head) then
+		print("[character]: "..Character.."| [humanoid]: "..humanoid.."| [humanoidRootPart]: "..humanoidRootPart.."| [Head]: "..Head )
+	end
+
+	return character, humanoid, humanoidRootPart , Head
+end
+
+function Check_Esp_Status(Player : Player , Humanoid : Humanoid , Connections : RBXScriptConnection , RootPart , Head)
+	if not (Player or Humanoid or Settings.Esp or RootPart or Head) then
+		Break_Connections(Connections)
+		print("[Player]: "..Player.."| [Humanoid]: "..Humanoid.." | [RootPart]: "..RootPart.." | [Head]: "..Head.." | [Status]: "..Settings.Esp )
+		return false
+	end 
+	return true
+end
+
+function Return_Distance_Max(Hrp_Pose : Vector3)
+	local Calcule_Distance = (Camera.CFrame.Position - Hrp_Pose).Magnitude
+	if Calcule_Distance <= Settings.Calculing_Distance  then
+		return true , math.floor(Calcule_Distance)
+	end
+	return false
+end
+
+function Tourn_(instance,Objectif,Destroy)
+	if instance.Visible == not Objectif and not Destroy then
+		instance.Visible = Objectif
+	elseif Destroy and instance.Visible ~= nil then
+		instance:Remove()
+	end
+end
+
+function Break_Connections(Connections : SharedTable , Visual : SharedTable)
+	for _, connection in pairs(Connections) do
+		if connection then
+			connection:Disconnect()
+			connection = nil
+		end
+	end
+	for _,v in Visual do
+		if v.Visible ~= nil then
+			Tourn_(v,false,true)
+		end
+	end
+end
+
+function Target_Visible(Camera_Pose , target)
+
+	local function isPartOfPlayer(part,Cibling)
+		if not part then return false end
+		local parent = part.Parent
+		local Atteps = 0
+		while parent do
+			if parent:FindFirstChildOfClass("Humanoid") then
+				local player = Players:GetPlayerFromCharacter(parent)
+				if player and parent.Name == Cibling then
+					return true, player  
+				end
+			end
+			parent = parent.Parent 
+			Atteps+=1
+			if Atteps>=10 then
+				return false
+			end
+		end
+		return false  
+	end
+
+	local Distance = (target.Position - Camera_Pose).Magnitude + 10
+	local ray = Ray.new(Camera_Pose,(target.Position-Camera_Pose).Unit * Distance )
+	local part, position = Wrk:FindPartOnRayWithIgnoreList(ray, {LocalCharacter or L_Player.Character or L_Player.CharacterAdded:Wait() or nil}, false, true)
+	if part and target.Parent and target.Parent.Name ~= nil then
+		local Resultat = isPartOfPlayer(part,target.Parent.Name)
+		if Resultat  then
+			return true
+		else
+			return false
+		end
+	end
+	return false
+end
+
+
+
+function Name_and_Distance_System(Player : Player , Visual : SharedTable , Position_On_Screen_Hrp : Vector2,Calculed_Distance : number) --|: Name / Distance
+	if Add_Visual.Name and Add_Visual.Distance then
+		Visual.Name.Text = Player.Name.."  [ "..Calculed_Distance.." ]"
+	elseif Add_Visual.Name and not Add_Visual.Distance then
+		Visual.Name.Text = Player.Name
+	elseif Add_Visual.Distance and not Add_Visual.Name then
+		Visual.Name.Text = "[ "..Calculed_Distance.." ]"
+	end
+	Visual.Name.Position = Vector2.new((Position_On_Screen_Hrp.X+Name_Settings.OffestX),(Position_On_Screen_Hrp.Y+Name_Settings.OffestY))
+	Visual.Name.Size = Name_Settings.Size
+	if Calculed_Distance <= Settings.Alert_Distance then
+		Visual.Name.Color = Settings.Aler_Color
+	else
+		Visual.Name.Color = Name_Settings.Color
+	end
+	Tourn_(Visual.Name,true)
+end
+
+function Health_System(Visual : SharedTable , Position_On_Screen_Hrp : Vector2) --|: Health
+	Visual.Health.Position = Vector2.new((Position_On_Screen_Hrp.X+Health_Settings.OffestX),(Position_On_Screen_Hrp.Y+Health_Settings.OffestY))
+	Visual.Health.Size = Name_Settings.Size
+	Tourn_(Visual.Health,true)
+end
+
+function Box_System(Visual : SharedTable, Position_On_Screen_Hrp : Vector2, Hrp_Pose : Vector3) --|: Box
+	local Position_On_Screen2 : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose - Legoff)
+	local Position_On_Screen3 : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose + HeadOff)
+	Visual.Box.Size = Vector2.new(1000/Position_On_Screen_Hrp.Z,Position_On_Screen3.Y - Position_On_Screen2.Y)
+	Visual.Box.Position = Vector2.new(Position_On_Screen_Hrp.X - Visual.Box.Size.X/2,Position_On_Screen_Hrp.Y-Visual.Box.Size.Y/2)
+	Visual.Box.Color = Box_Settings.Color
+	Tourn_(Visual.Box,true)
+end
+
+function Liner_Function(Visual : SharedTable,Position_On_Screen_Hrp : Vector2, Calculed_Distance : number)
+	Visual.Liner.From = Vector2.new(Camera.ViewportSize.X/Liner_Settings.OffestX,Camera.ViewportSize.Y/Liner_Settings.OffestY)
+	Visual.Liner.To = Vector2.new(Position_On_Screen_Hrp.X,Position_On_Screen_Hrp.Y)
+	if Calculed_Distance <= Settings.Alert_Distance then
+		Visual.Liner.Color = Settings.Aler_Color
+	else
+		Visual.Liner.Color = Liner_Settings.Color
+	end
+	Tourn_(Visual.Liner,true)
+end
+
+function Circle_System(Visual : SharedTable,Position_On_Screen_Hrp : Vector2,Hrp_Pose : Vector3,Head : Part)
+	if not Head then return end
+	local Head_Pose = Head.Position
+	local CameraPose = Camera.CFrame.Position
+	local Position_On_Screen3 : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Head_Pose)
+	
+	local HeadSize = Head.Size.Y / 2
+	local Distance = (CameraPose - Head_Pose).Magnitude
+	local ScreenRadius = (HeadSize / Distance) * CameraX
+	ScreenRadius = math.clamp(ScreenRadius, Circle_Settings.Minimum_Size, Circle_Settings.Maximum_Size)
+	
+	Visual.Circle.Position = Vector2.new(Position_On_Screen3.X,Position_On_Screen3.Y)
+	Visual.Circle.Radius = ScreenRadius
+	
+	if Circle_Settings.RayCast  then
+		if Target_Visible(CameraPose,Head) then
+			Visual.Circle.Color = Circle_Settings.RayCastColor
+		else
+			Visual.Circle.Color = Circle_Settings.Color
+		end
+	else
+		Visual.Circle.Color = Circle_Settings.Color
+	end
+
+	Tourn_(Visual.Circle,true)
+end
+
+function TournOff_Visuals(Visual : SharedTable)
+	for _,v in Visual do
+		if v.Visible ~= nil then
+			Tourn_(v,false)
+		end
+	end
+end
+
+------------------------------------------------------------------|: Esp System
+function Esp(Player : Player , HumanoidRootPart : Part , Humanoid : Humanoid , Connections : SharedTable , Visual : SharedTable , Head : Part)
+local Valide = Check_Esp_Status(Player,Humanoid,Connections,HumanoidRootPart,Head)
+if not (Valide or HumanoidRootPart ) then return print("Error 148  :"..Player.Name) end
+	local Hrp_Pose = HumanoidRootPart.Position
+	local Valide_Distance , Calculed_Distance = Return_Distance_Max(Hrp_Pose)
+	
+	if not Valide_Distance then return TournOff_Visuals(Visual) end
+	
+	local Position_On_Screen_Hrp : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose)
+	
+	if Valide_On_Screen and Valide_Distance then
+		
+		if Add_Visual.Name or Add_Visual.Distance then --|: Name and Distance
+			Name_and_Distance_System(Player,Visual,Position_On_Screen_Hrp,Calculed_Distance)
+		else
+			Tourn_(Visual.Name,false)
+		end
+		
+		if Add_Visual.Health then --|: Health
+			Health_System(Visual,Position_On_Screen_Hrp)
+		else
+			Tourn_(Visual.Health,false)
+		end
+		
+		if Add_Visual.Box then --|: Box
+			Box_System(Visual,Position_On_Screen_Hrp,Hrp_Pose)
+		else
+			Tourn_(Visual.Box,false)
+		end
+		
+		if Add_Visual.Liner then
+			Liner_Function(Visual,Position_On_Screen_Hrp,Calculed_Distance)
+		else
+			Tourn_(Visual.Liner,false)
+		end
+		
+		if Add_Visual.Circle then
+			Circle_System(Visual,Position_On_Screen_Hrp,Hrp_Pose,Head)
+		else
+			Tourn_(Visual.Circle,false)
+		end
+		
+	else
+		TournOff_Visuals(Visual)
+	end
+
+end
+
+function Get_Pourcent(Actual_Value,Max_Value)
+	return math.floor((Actual_Value / Max_Value) * 100)
+end
+
+function Player_Moving(Player : Player ,Humanoid : Humanoid , Connections : SharedTable , HumanoidRootPart : Part , Visual : SharedTable , Character : Model , Head : Part)
+	local Connection_Runnig = nil
+	local Connection_Air = nil
+	local Camera_Connection_Active = false
+	local DoubleCheck = true
+
+	Connections.MoveDirection = Humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(function()
+		if Humanoid.MoveDirection ~= Vector3.new(0,0,0) and Settings.Esp and not (Connection_Runnig or Camera_Connection_Active) then
+			Connection_Runnig = true
+			DoubleCheck = true
+			task.spawn(function()
+				while Humanoid.MoveDirection ~= Vector3.new(0,0,0) and Settings.Esp and Humanoid and HumanoidRootPart do
+					Esp(Player,HumanoidRootPart,Humanoid,Connections,Visual,Head)
+					task.wait(Settings.Speed_Calculing)
+				end
+				DoubleCheck = false
+				task.spawn(function() -------|: fix correct Esp Pose afer Character Stop
+					for i = 1,250 do if Player and Humanoid and Settings.Esp and HumanoidRootPart then
+							if DoubleCheck then break end
+							Esp(Player,HumanoidRootPart,Humanoid,Connections,Visual,Head)
+						task.wait(0.05)
+						end
+					end
+				end)
+				task.wait(1)
+				Connection_Runnig = false
+			end)
+		 elseif not Settings.Esp then
+			Break_Connections(Connections,Visual)
+		end
+	end)
+	local Air_ = nil
+	
+	Connections.Humanoid_Died = Humanoid.Died:Connect(function()
+		Break_Connections(Connections,Visual)
+	end)
+	
+	Visual.Health.Text = "[ "..math.floor(Humanoid.Health).." ]"
+	local MaxHealth = Humanoid.MaxHealth
+	Connections.Humanoid_Health = Humanoid.HealthChanged:Connect(function(New_Health)
+		if Settings.Esp and Visual.Health.Visible ~= nil then
+			local Calculed_Health = Get_Pourcent(New_Health,MaxHealth)
+			Visual.Health.Text = "[ "..math.floor(New_Health).." ]"
+			if Calculed_Health >= 70 then
+				Visual.Health.Color = Health_Settings.Color_Under_100
+			elseif Calculed_Health >= 40 then
+				Visual.Health.Color = Health_Settings.Color_Under_70
+			else
+				Visual.Health.Color = Health_Settings.Color_Under_40
+			end
+		elseif not Settings.Esp then
+			Break_Connections(Connections,Visual)
+		end
+		
+	end)
+	
+	
+	Connections.FloorMaterial = Humanoid:GetPropertyChangedSignal("FloorMaterial"):Connect(function()
+		if not Settings.Esp then Break_Connections(Connections,Visual) return end
+		if Settings.Esp and Humanoid.FloorMaterial == Enum.Material.Air then Air_ = true else Air_ = false end
+		if (Connection_Runnig or Connection_Air or Camera_Connection_Active) or not Humanoid or Humanoid.FloorMaterial ~= Enum.Material.Air then return end
+		Connection_Air = true
+		task.spawn(function()
+			while not Connection_Runnig and Settings.Esp and Humanoid and Air_ and HumanoidRootPart do
+				Esp(Player,HumanoidRootPart,Humanoid,Connections,Visual,Head)
+				task.wait(Settings.Speed_Calculing)
+			end
+			Connection_Air = false
+		end)
+	end)
+	
+	Connections.Camera = Camera:GetPropertyChangedSignal("CoordinateFrame"):Connect(function()
+		  if Settings.Esp and Player and Humanoid and HumanoidRootPart then
+				Camera_Connection_Active = true
+			Esp(Player,HumanoidRootPart,Humanoid,Connections,Visual,Head)
+		  elseif not Settings.Esp  then
+			Break_Connections(Connections,Visual)
+		  end
+		  task.wait(0.1)
+		  Camera_Connection_Active = false
+	end)
+	Character.AncestryChanged:Connect(function(_,NewParent_)
+		if not NewParent_  then
+			Break_Connections(Connections,Visual)
+		end
+	end)
+	
+	Esp(Player,HumanoidRootPart,Humanoid,Connections,Visual,Head)
+	
+end
+
+function General(Player: Player, Character: Model)
+	local character, humanoid, humanoidRootPart , Head = Return_Humanoid_and_RootPart(Player, Character)
+	if not (humanoid or humanoidRootPart or character or Head) then return print("206 : "..Player.Name) end
+	
+	local Connections={}
+	
+	local function CreateVisuals()
+		return {
+			Name = Create_Esp_Name(),
+			Health = Create_Health(),
+			Box = Create_Esp_Box(),
+			Liner = Create_Esp_Liner(),
+			Circle = Create_Esp_Circle(),
+		}
+	end
+	local Visual = CreateVisuals()
+
+	local Valide = Check_Esp_Status(Player,humanoid,Connections)
+	if not Valide then print("221 : ".. Player.Name) return end
+	Player_Moving(Player,humanoid,Connections,humanoidRootPart,Visual,character,Head)
+	
+end
+
+function Insert_in_Black_List_Ray(Character: Model)
+	LocalCharacter = Character
+end
+
+
+function CharacterCreated(Player : Player)
+	Player.CharacterAdded:Connect(function(New_Char) if Settings.Esp then General(Player,New_Char) end end)
+end
+
+task.spawn(function()
+	while not L_Player.Character do
+		task.wait(1)
+	end
+	Insert_in_Black_List_Ray(L_Player.Character or L_Player.CharacterAdded:Wait())
+end)
+
+L_Player.CharacterAdded:Connect(Insert_in_Black_List_Ray)
+
+function Enable_Esp(Bolean)
+	print("Try: ",Bolean)
+	if Bolean then
+		Settings.Esp = true
+		print("Try")
+		for Index , Player_ in Players:GetPlayers() do
+			if not WhiteList_[Player_.Name] then
+				print(Player_.Name)
+			CharacterCreated(Player_)
+			General(Player_,Player_.Character or Player_.CharacterAdded:Wait())
+			task.wait()
+			end
+		end
+		
+		Connections_Global.PlayerJoined = Players.PlayerAdded:Connect(CharacterCreated)
+		
+	elseif not Bolean then
+		Settings.Esp = false
+		for _, connection in ipairs({Connections_Global}) do
+			if connection then
+				connection:Disconnect()
+				connection = nil 
+			end
+		end
+	end
+end
+
+Enable_Esp(true)
+print("Tes")
