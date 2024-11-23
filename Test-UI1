@@ -1,3 +1,4 @@
+local UILibrary334 = {}
 --[[
 	ui-engine-v2
 	version 1.3a
@@ -2021,6 +2022,7 @@ function library:AddWindow(title, options)
 
 	return window_data, Window
 end
+return UILibrary334
 	Tab:Show()
 	library:FormatWindows()
 end
