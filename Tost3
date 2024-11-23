@@ -8,8 +8,9 @@ local CameraX = Camera.ViewportSize.X
 if not L_Player or L_Player.Name  then
     repeat
 		wait(1)
+		print("Waiting For Local Player")
 		L_Player = Players.LocalPlayer
-    until L_Player or L_Player.Name
+    until L_Player ~= nil or L_Player.Name
 end
 
 
