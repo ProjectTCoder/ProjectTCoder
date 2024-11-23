@@ -29,7 +29,7 @@ Settings.Team_Checke = true
 
 local Add_Visual={}
 Add_Visual.Distance = true
-Add_Visual.Name = true
+Add_Visual.Name = false
 Add_Visual.Health = true
 Add_Visual.Box = true
 Add_Visual.Liner = true
