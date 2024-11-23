@@ -1,14 +1,13 @@
-local Players = game:GetService("Players")
+Players = game:GetService("Players")
 local Wrk = game:GetService("Workspace")
 local L_Player = Players.LocalPlayer
 local Camera = Wrk.CurrentCamera
 local WorldToViewportPoint = Camera.WorldToViewportPoint
 local CameraX = Camera.ViewportSize.X
 
-if not L_Player or L_Player.Name  then
+if not L_Player or L_Player.Name or L_Player == nil  then
     repeat
 		wait(1)
-		print("Waiting For Local Player")
 		L_Player = Players.LocalPlayer
     until L_Player ~= nil or L_Player.Name
 end
@@ -26,10 +25,11 @@ Settings.Calculing_Distance = math.huge
 Settings.Speed_Calculing = 0
 Settings.Alert_Distance = 150
 Settings.Aler_Color = Color3.new(1, 0, 0)
+Settings.Team_Checke = true
 
 local Add_Visual={}
 Add_Visual.Distance = true
-Add_Visual.Name = false
+Add_Visual.Name = true
 Add_Visual.Health = true
 Add_Visual.Box = true
 Add_Visual.Liner = true
@@ -171,21 +171,22 @@ function Return_Humanoid_and_RootPart(player: Player, Character: Model)
 			break
 		end
 
-		task.wait(0.1)
+		task.wait(0.4)
 		attempts += 1
 	end
 	
-	if not (character or humanoid or humanoidRootPart or Head) then
-		print("[character]: "..Character.."| [humanoid]: "..humanoid.."| [humanoidRootPart]: "..humanoidRootPart.."| [Head]: "..Head )
+	if character == nil or humanoid == nil or humanoidRootPart == nil or Head == nil then
+		print("[character]: ",Character,"| [humanoid]: ",humanoid,"| [humanoidRootPart]: ",humanoidRootPart,"| [Head]: ",Head )
 	end
 
 	return character, humanoid, humanoidRootPart , Head
 end
 
 function Check_Esp_Status(Player : Player , Humanoid : Humanoid , Connections : RBXScriptConnection , RootPart , Head)
-	if not (Player or Humanoid or Settings.Esp or RootPart or Head) then
+	--print("Player:", Player, "Humanoid:", Humanoid, "RootPart:", RootPart, "Head:", Head)
+	if Player == nil or Humanoid == nil or RootPart == nil or Head == nil then
 		Break_Connections(Connections)
-		print("[Player]: "..Player.."| [Humanoid]: "..Humanoid.." | [RootPart]: "..RootPart.." | [Head]: "..Head.." | [Status]: "..Settings.Esp )
+		print("[188]: [Player]: ",Player,"| [Humanoid]: ",Humanoid," | [RootPart]: ",RootPart," | [Head]: ",Head," | [Status]: ",Settings.Esp)
 		return false
 	end 
 	return true
@@ -219,9 +220,12 @@ function Break_Connections(Connections : SharedTable , Visual : SharedTable)
 			connection = nil
 		end
 	end
+	if Visual ~= nil then
 	for _,v in Visual do task.wait()
 		Tourn_(v,false,true)
 	end
+	end
+	
 end
 
 function Target_Visible(Camera_Pose , target)
@@ -344,7 +348,7 @@ end
 ------------------------------------------------------------------|: Esp System
 function Esp(Player : Player , HumanoidRootPart : Part , Humanoid : Humanoid , Connections : SharedTable , Visual : SharedTable , Head : Part)
 local Valide = Check_Esp_Status(Player,Humanoid,Connections,HumanoidRootPart,Head)
-	if not Valide or not HumanoidRootPart.Position then return print("Error 148  :"..Player.Name) end
+	if not Valide then return print("Error 148  :"..Player.Name) end
 	local Hrp_Pose = HumanoidRootPart.Position
 	local Valide_Distance , Calculed_Distance = Return_Distance_Max(Hrp_Pose)
 	
@@ -488,7 +492,10 @@ end
 
 function General(Player: Player, Character: Model)
 	local character, humanoid, humanoidRootPart , Head = Return_Humanoid_and_RootPart(Player, Character)
-	if not (humanoid or humanoidRootPart or character or Head) then return print("206 : "..Player.Name) end
+	--print("[496]  Character:  ",character,"| Humanoid:  ",humanoid,"| humanoidRootPart: ",humanoidRootPart,"| Head: ",Head )
+	if humanoid == nil or humanoidRootPart == nil or character == nil or Head == nil or Player == nil then 
+		print("[495]:  [Player]: ",Player,"| [Humanoid]: ",humanoid," | [humanoidRootPart]: ",humanoidRootPart," | [Head]: ",Head," | [Status]: ",Settings.Esp)
+	return  end
 	
 	local Connections={}
 	
@@ -502,9 +509,9 @@ function General(Player: Player, Character: Model)
 		}
 	end
 	local Visual = CreateVisuals()
-
-	local Valide = Check_Esp_Status(Player,humanoid,Connections)
+	local Valide = Check_Esp_Status(Player,humanoid,Connections,humanoidRootPart,Head)
 	if not Valide then print("221 : ".. Player.Name) return end
+	--print("Check:511: Passed")
 	Player_Moving(Player,humanoid,Connections,humanoidRootPart,Visual,character,Head)
 	
 end
@@ -515,7 +522,10 @@ end
 
 
 function CharacterCreated(Player : Player)
-	Player.CharacterAdded:Connect(function(New_Char) if Settings.Esp then General(Player,New_Char) end end)
+	if not WhiteList_[Player.Name] then
+		Player.CharacterAdded:Connect(function(New_Char) if Settings.Esp then task.delay(.1,function() General(Player,New_Char) end) end end)
+	end
+
 end
 
 task.spawn(function()
@@ -525,15 +535,31 @@ task.spawn(function()
 	Insert_in_Black_List_Ray(L_Player.Character or L_Player.CharacterAdded:Wait())
 end)
 
-L_Player.CharacterAdded:Connect(Insert_in_Black_List_Ray)
+ L_Player.CharacterAdded:Connect(Insert_in_Black_List_Ray)
+
+
+function Team_Checker_Valider()
+	for Index , Player_ in Players:GetPlayers() do
+		if Player_.Team ~= nil and not WhiteList_[Player_.Name]  then
+			if Player_.Team == L_Player.Team or Player_.TeamColor == L_Player.TeamColor then
+				WhiteList_[Player_.Name] = true
+			end
+		end
+	end
+end
 
 function Enable_Esp(Bolean)
 	if Bolean then
 		Settings.Esp = true
+		
+		if Settings.Team_Checke then Team_Checker_Valider() end
+		
 		for Index , Player_ in Players:GetPlayers() do
 			if not WhiteList_[Player_.Name] then
 			CharacterCreated(Player_)
-			General(Player_,Player_.Character or Player_.CharacterAdded:Wait())
+			task.delay(.1,function()
+				General(Player_,Player_.Character or Player_.CharacterAdded:Wait())
+			end)
 			task.wait()
 			end
 		end
