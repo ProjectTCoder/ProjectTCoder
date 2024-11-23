@@ -6,10 +6,10 @@ local WorldToViewportPoint = Camera.WorldToViewportPoint
 local CameraX = Camera.ViewportSize.X
 
 if not L_Player or L_Player.Name or L_Player == nil  then
-    repeat
+	repeat
 		wait(1)
 		L_Player = Players.LocalPlayer
-    until L_Player ~= nil or L_Player.Name
+	until L_Player ~= nil or L_Player.Name
 end
 
 
@@ -144,7 +144,7 @@ function Return_Humanoid_and_RootPart(player: Player, Character: Model)
 	local character 
 	local humanoid , humanoidRootPart
 	local attempts = 0
-	local maxAttempts = 150
+	local maxAttempts = 200
 	if Character and Players:GetPlayerFromCharacter(Character) then
 		character = Character
 	else
@@ -171,12 +171,12 @@ function Return_Humanoid_and_RootPart(player: Player, Character: Model)
 			break
 		end
 
-		task.wait(0.4)
+		task.wait(1)
 		attempts += 1
 	end
-	
+
 	if character == nil or humanoid == nil or humanoidRootPart == nil or Head == nil then
-		print("[character]: ",Character,"| [humanoid]: ",humanoid,"| [humanoidRootPart]: ",humanoidRootPart,"| [Head]: ",Head )
+		--print("[character]: ",Character,"| [humanoid]: ",humanoid,"| [humanoidRootPart]: ",humanoidRootPart,"| [Head]: ",Head )
 	end
 
 	return character, humanoid, humanoidRootPart , Head
@@ -186,7 +186,7 @@ function Check_Esp_Status(Player : Player , Humanoid : Humanoid , Connections : 
 	--print("Player:", Player, "Humanoid:", Humanoid, "RootPart:", RootPart, "Head:", Head)
 	if Player == nil or Humanoid == nil or RootPart == nil or Head == nil then
 		Break_Connections(Connections)
-		print("[188]: [Player]: ",Player,"| [Humanoid]: ",Humanoid," | [RootPart]: ",RootPart," | [Head]: ",Head," | [Status]: ",Settings.Esp)
+		--print("[188]: [Player]: ",Player,"| [Humanoid]: ",Humanoid," | [RootPart]: ",RootPart," | [Head]: ",Head," | [Status]: ",Settings.Esp)
 		return false
 	end 
 	return true
@@ -221,11 +221,11 @@ function Break_Connections(Connections : SharedTable , Visual : SharedTable)
 		end
 	end
 	if Visual ~= nil then
-	for _,v in Visual do task.wait()
-		Tourn_(v,false,true)
+		for _,v in Visual do task.wait()
+			Tourn_(v,false,true)
+		end
 	end
-	end
-	
+
 end
 
 function Target_Visible(Camera_Pose , target)
@@ -317,15 +317,15 @@ function Circle_System(Visual : SharedTable,Position_On_Screen_Hrp : Vector2,Hrp
 	local Head_Pose = Head.Position
 	local CameraPose = Camera.CFrame.Position
 	local Position_On_Screen3 : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Head_Pose)
-	
+
 	local HeadSize = Head.Size.Y / 2
 	local Distance = (CameraPose - Head_Pose).Magnitude
 	local ScreenRadius = (HeadSize / Distance) * CameraX
 	ScreenRadius = math.clamp(ScreenRadius, Circle_Settings.Minimum_Size, Circle_Settings.Maximum_Size)
-	
+
 	Visual.Circle.Position = Vector2.new(Position_On_Screen3.X,Position_On_Screen3.Y)
 	Visual.Circle.Radius = ScreenRadius
-	
+
 	if Circle_Settings.RayCast  then
 		if Target_Visible(CameraPose,Head) then
 			Visual.Circle.Color = Circle_Settings.RayCastColor
@@ -347,47 +347,47 @@ end
 
 ------------------------------------------------------------------|: Esp System
 function Esp(Player : Player , HumanoidRootPart : Part , Humanoid : Humanoid , Connections : SharedTable , Visual : SharedTable , Head : Part)
-local Valide = Check_Esp_Status(Player,Humanoid,Connections,HumanoidRootPart,Head)
-	if not Valide then return print("Error 148  :"..Player.Name) end
+	local Valide = Check_Esp_Status(Player,Humanoid,Connections,HumanoidRootPart,Head)
+	if not Valide then return  end --print("Error 148  :"..Player.Name)
 	local Hrp_Pose = HumanoidRootPart.Position
 	local Valide_Distance , Calculed_Distance = Return_Distance_Max(Hrp_Pose)
-	
+
 	if not Valide_Distance then return TournOff_Visuals(Visual) end
-	
+
 	local Position_On_Screen_Hrp : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose)
-	
+
 	if Valide_On_Screen and Valide_Distance then
-		
+
 		if Add_Visual.Name or Add_Visual.Distance then --|: Name and Distance
 			Name_and_Distance_System(Player,Visual,Position_On_Screen_Hrp,Calculed_Distance)
 		else
 			Tourn_(Visual.Name,false)
 		end
-		
+
 		if Add_Visual.Health then --|: Health
 			Health_System(Visual,Position_On_Screen_Hrp)
 		else
 			Tourn_(Visual.Health,false)
 		end
-		
+
 		if Add_Visual.Box then --|: Box
 			Box_System(Visual,Position_On_Screen_Hrp,Hrp_Pose)
 		else
 			Tourn_(Visual.Box,false)
 		end
-		
+
 		if Add_Visual.Liner then
 			Liner_Function(Visual,Position_On_Screen_Hrp,Calculed_Distance)
 		else
 			Tourn_(Visual.Liner,false)
 		end
-		
+
 		if Add_Visual.Circle then
 			Circle_System(Visual,Position_On_Screen_Hrp,Hrp_Pose,Head)
 		else
 			Tourn_(Visual.Circle,false)
 		end
-		
+
 	else
 		TournOff_Visuals(Visual)
 	end
@@ -418,23 +418,23 @@ function Player_Moving(Player : Player ,Humanoid : Humanoid , Connections : Shar
 					for i = 1,250 do if Player and Humanoid and Settings.Esp and HumanoidRootPart then
 							if DoubleCheck then break end
 							Esp(Player,HumanoidRootPart,Humanoid,Connections,Visual,Head)
-						task.wait(0.05)
+							task.wait(0.05)
 						end
 					end
 				end)
 				task.wait(1)
 				Connection_Runnig = false
 			end)
-		 elseif not Settings.Esp then
+		elseif not Settings.Esp then
 			Break_Connections(Connections,Visual)
 		end
 	end)
 	local Air_ = nil
-	
+
 	Connections.Humanoid_Died = Humanoid.Died:Connect(function()
 		Break_Connections(Connections,Visual)
 	end)
-	
+
 	Visual.Health.Text = "[ "..math.floor(Humanoid.Health).." ]"
 	local MaxHealth = Humanoid.MaxHealth
 	Connections.Humanoid_Health = Humanoid.HealthChanged:Connect(function(New_Health)
@@ -451,10 +451,10 @@ function Player_Moving(Player : Player ,Humanoid : Humanoid , Connections : Shar
 		elseif not Settings.Esp then
 			Break_Connections(Connections,Visual)
 		end
-		
+
 	end)
-	
-	
+
+
 	Connections.FloorMaterial = Humanoid:GetPropertyChangedSignal("FloorMaterial"):Connect(function()
 		if not Settings.Esp then Break_Connections(Connections,Visual) return end
 		if Settings.Esp and Humanoid.FloorMaterial == Enum.Material.Air then Air_ = true else Air_ = false end
@@ -468,16 +468,16 @@ function Player_Moving(Player : Player ,Humanoid : Humanoid , Connections : Shar
 			Connection_Air = false
 		end)
 	end)
-	
+
 	Connections.Camera = Camera:GetPropertyChangedSignal("CoordinateFrame"):Connect(function()
-		  if Settings.Esp and Player and Humanoid and HumanoidRootPart then
-				Camera_Connection_Active = true
+		if Settings.Esp and Player and Humanoid and HumanoidRootPart then
+			Camera_Connection_Active = true
 			Esp(Player,HumanoidRootPart,Humanoid,Connections,Visual,Head)
-		  elseif not Settings.Esp  then
+		elseif not Settings.Esp  then
 			Break_Connections(Connections,Visual)
-		  end
-		  task.wait(0.1)
-		  Camera_Connection_Active = false
+		end
+		task.wait(0.1)
+		Camera_Connection_Active = false
 	end)
 	Character.AncestryChanged:Connect(function(_,NewParent_)
 		if not NewParent_  then
@@ -485,20 +485,20 @@ function Player_Moving(Player : Player ,Humanoid : Humanoid , Connections : Shar
 			Break_Connections(Connections,Visual)
 		end
 	end)
-	
+
 	Esp(Player,HumanoidRootPart,Humanoid,Connections,Visual,Head)
-	
+
 end
 
 function General(Player: Player, Character: Model)
 	local character, humanoid, humanoidRootPart , Head = Return_Humanoid_and_RootPart(Player, Character)
 	--print("[496]  Character:  ",character,"| Humanoid:  ",humanoid,"| humanoidRootPart: ",humanoidRootPart,"| Head: ",Head )
 	if humanoid == nil or humanoidRootPart == nil or character == nil or Head == nil or Player == nil then 
-		print("[495]:  [Player]: ",Player,"| [Humanoid]: ",humanoid," | [humanoidRootPart]: ",humanoidRootPart," | [Head]: ",Head," | [Status]: ",Settings.Esp)
-	return  end
-	
+		--print("[495]:  [Player]: ",Player,"| [Humanoid]: ",humanoid," | [humanoidRootPart]: ",humanoidRootPart," | [Head]: ",Head," | [Status]: ",Settings.Esp)
+		return  end
+
 	local Connections={}
-	
+
 	local function CreateVisuals()
 		return {
 			Name = Create_Esp_Name(),
@@ -510,10 +510,10 @@ function General(Player: Player, Character: Model)
 	end
 	local Visual = CreateVisuals()
 	local Valide = Check_Esp_Status(Player,humanoid,Connections,humanoidRootPart,Head)
-	if not Valide then print("221 : ".. Player.Name) return end
+	if not Valide then  return end --print("221 : ".. Player.Name)
 	--print("Check:511: Passed")
 	Player_Moving(Player,humanoid,Connections,humanoidRootPart,Visual,character,Head)
-	
+
 end
 
 function Insert_in_Black_List_Ray(Character: Model)
@@ -535,7 +535,7 @@ task.spawn(function()
 	Insert_in_Black_List_Ray(L_Player.Character or L_Player.CharacterAdded:Wait())
 end)
 
- L_Player.CharacterAdded:Connect(Insert_in_Black_List_Ray)
+L_Player.CharacterAdded:Connect(Insert_in_Black_List_Ray)
 
 
 function Team_Checker_Valider()
@@ -551,21 +551,21 @@ end
 function Enable_Esp(Bolean)
 	if Bolean then
 		Settings.Esp = true
-		
+
 		if Settings.Team_Checke then Team_Checker_Valider() end
-		
+
 		for Index , Player_ in Players:GetPlayers() do
 			if not WhiteList_[Player_.Name] then
-			CharacterCreated(Player_)
-			task.delay(.1,function()
-				General(Player_,Player_.Character or Player_.CharacterAdded:Wait())
-			end)
-			task.wait()
+				CharacterCreated(Player_)
+				task.delay(.1,function()
+					General(Player_,Player_.Character or Player_.CharacterAdded:Wait())
+				end)
+				task.wait()
 			end
 		end
-		
+
 		Connections_Global.PlayerJoined = Players.PlayerAdded:Connect(CharacterCreated)
-		
+
 	elseif not Bolean then
 		Settings.Esp = false
 		for _, connection in ipairs({Connections_Global}) do task.wait()
