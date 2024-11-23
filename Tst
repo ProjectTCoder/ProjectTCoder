@@ -13,7 +13,7 @@ local Legoff = Vector3.new(0,4,0)
 
 local Settings={}
 Settings.Esp = true
-Settings.Calculing_Distance = 1500
+Settings.Calculing_Distance = math.huge
 Settings.Speed_Calculing = 0
 Settings.Alert_Distance = 150
 Settings.Aler_Color = Color3.new(1, 0, 0)
@@ -22,8 +22,8 @@ local Add_Visual={}
 Add_Visual.Distance = true
 Add_Visual.Name = false
 Add_Visual.Health = true
-Add_Visual.Box = false
-Add_Visual.Liner = false
+Add_Visual.Box = true
+Add_Visual.Liner = true
 Add_Visual.Circle = true
 Add_Visual.RayCast = true
 
@@ -48,8 +48,8 @@ Box_Settings.Size = 50
 local Liner_Settings={}
 Liner_Settings.Color = Color3.new(1, 1, 1)
 Liner_Settings.Aler_Color = true
-Liner_Settings.OffestX = -60
-Liner_Settings.OffestY = -70
+Liner_Settings.OffestX = 2
+Liner_Settings.OffestY = 100
 
 local Circle_Settings={}
 Circle_Settings.RayCast = true
@@ -191,24 +191,27 @@ function Return_Distance_Max(Hrp_Pose : Vector3)
 end
 
 function Tourn_(instance,Objectif,Destroy)
+	local function Safe_Delet(Object)
+		local success, err = pcall(function()
+			return Object:Remove()
+		end)
+	end
 	if instance.Visible == not Objectif and not Destroy then
 		instance.Visible = Objectif
-	elseif Destroy and instance.Visible ~= nil then
-		instance:Remove()
+	elseif Destroy then
+		Safe_Delet(instance)
 	end
 end
 
 function Break_Connections(Connections : SharedTable , Visual : SharedTable)
-	for _, connection in pairs(Connections) do
+	for _, connection in pairs(Connections) do task.wait()
 		if connection then
 			connection:Disconnect()
 			connection = nil
 		end
 	end
-	for _,v in Visual do
-		if v.Visible ~= nil then
-			Tourn_(v,false,true)
-		end
+	for _,v in Visual do task.wait()
+		Tourn_(v,false,true)
 	end
 end
 
@@ -218,7 +221,7 @@ function Target_Visible(Camera_Pose , target)
 		if not part then return false end
 		local parent = part.Parent
 		local Atteps = 0
-		while parent do
+		while parent do task.wait()
 			if parent:FindFirstChildOfClass("Humanoid") then
 				local player = Players:GetPlayerFromCharacter(parent)
 				if player and parent.Name == Cibling then
@@ -284,7 +287,9 @@ function Box_System(Visual : SharedTable, Position_On_Screen_Hrp : Vector2, Hrp_
 end
 
 function Liner_Function(Visual : SharedTable,Position_On_Screen_Hrp : Vector2, Calculed_Distance : number)
-	Visual.Liner.From = Vector2.new(Camera.ViewportSize.X/Liner_Settings.OffestX,Camera.ViewportSize.Y/Liner_Settings.OffestY)
+	local Camera_X = Camera.ViewportSize.X
+	local Camera_Y = Camera.ViewportSize.Y
+	Visual.Liner.From = Vector2.new(Camera_X/Liner_Settings.OffestX,Camera_Y/Liner_Settings.OffestY)
 	Visual.Liner.To = Vector2.new(Position_On_Screen_Hrp.X,Position_On_Screen_Hrp.Y)
 	if Calculed_Distance <= Settings.Alert_Distance then
 		Visual.Liner.Color = Settings.Aler_Color
@@ -322,17 +327,15 @@ function Circle_System(Visual : SharedTable,Position_On_Screen_Hrp : Vector2,Hrp
 end
 
 function TournOff_Visuals(Visual : SharedTable)
-	for _,v in Visual do
-		if v.Visible ~= nil then
-			Tourn_(v,false)
-		end
+	for _,v in Visual do task.wait()
+		Tourn_(v,false)
 	end
 end
 
 ------------------------------------------------------------------|: Esp System
 function Esp(Player : Player , HumanoidRootPart : Part , Humanoid : Humanoid , Connections : SharedTable , Visual : SharedTable , Head : Part)
 local Valide = Check_Esp_Status(Player,Humanoid,Connections,HumanoidRootPart,Head)
-if not (Valide or HumanoidRootPart ) then return print("Error 148  :"..Player.Name) end
+	if not Valide or not HumanoidRootPart.Position then return print("Error 148  :"..Player.Name) end
 	local Hrp_Pose = HumanoidRootPart.Position
 	local Valide_Distance , Calculed_Distance = Return_Distance_Max(Hrp_Pose)
 	
@@ -465,6 +468,7 @@ function Player_Moving(Player : Player ,Humanoid : Humanoid , Connections : Shar
 	end)
 	Character.AncestryChanged:Connect(function(_,NewParent_)
 		if not NewParent_  then
+			task.wait(0.1)
 			Break_Connections(Connections,Visual)
 		end
 	end)
@@ -515,13 +519,10 @@ end)
 L_Player.CharacterAdded:Connect(Insert_in_Black_List_Ray)
 
 function Enable_Esp(Bolean)
-	print("Try: ",Bolean)
 	if Bolean then
 		Settings.Esp = true
-		print("Try")
 		for Index , Player_ in Players:GetPlayers() do
 			if not WhiteList_[Player_.Name] then
-				print(Player_.Name)
 			CharacterCreated(Player_)
 			General(Player_,Player_.Character or Player_.CharacterAdded:Wait())
 			task.wait()
@@ -532,7 +533,7 @@ function Enable_Esp(Bolean)
 		
 	elseif not Bolean then
 		Settings.Esp = false
-		for _, connection in ipairs({Connections_Global}) do
+		for _, connection in ipairs({Connections_Global}) do task.wait()
 			if connection then
 				connection:Disconnect()
 				connection = nil 
@@ -542,4 +543,3 @@ function Enable_Esp(Bolean)
 end
 
 Enable_Esp(true)
-print("Tes")
