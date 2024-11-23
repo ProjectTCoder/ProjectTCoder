@@ -5,6 +5,13 @@ local Camera = Wrk.CurrentCamera
 local WorldToViewportPoint = Camera.WorldToViewportPoint
 local CameraX = Camera.ViewportSize.X
 
+if not L_Player.Name  then
+    repeat
+        wait(1)
+    until L_Player.Name
+end
+
+
 local WhiteList_={string}
 WhiteList_[L_Player.Name] = true
 
