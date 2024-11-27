@@ -1,3 +1,13 @@
+local engine = loadstring(game:HttpGet("https://raw.githubusercontent.com/Singularity5490/rbimgui-2/main/rbimgui-2.lua"))()
+
+local window1 = engine.new({
+    text = "Project_T",
+    size = Vector2.new(400,600),
+})
+
+window1.open()
+----------------------------------------------------------------------------------------------------------------------------------|: Library End
+
 Players = game:GetService("Players")
 local Wrk = game:GetService("Workspace")
 local L_Player = Players.LocalPlayer
@@ -20,21 +30,21 @@ local HeadOff = Vector3.new(0,1.5,0)
 local Legoff = Vector3.new(0,4,0)
 
 local Settings={}
-Settings.Esp = true
-Settings.Calculing_Distance = math.huge
+Settings.Esp = false
+Settings.Calculing_Distance = 1500
 Settings.Speed_Calculing = 0
 Settings.Alert_Distance = 150
 Settings.Aler_Color = Color3.new(1, 0, 0)
-Settings.Team_Checke = true
+Settings.Team_Checke = false
 
 local Add_Visual={}
-Add_Visual.Distance = true
+Add_Visual.Distance = false
 Add_Visual.Name = false
-Add_Visual.Health = true
-Add_Visual.Box = true
-Add_Visual.Liner = true
-Add_Visual.Circle = true
-Add_Visual.RayCast = true
+Add_Visual.Health = false
+Add_Visual.Box = false
+Add_Visual.Liner = false
+Add_Visual.Circle = false
+Add_Visual.RayCast = false
 
 local Name_Settings={}
 Name_Settings.Color = Color3.new(1, 1, 1)
@@ -56,12 +66,12 @@ Box_Settings.Size = 50
 
 local Liner_Settings={}
 Liner_Settings.Color = Color3.new(1, 1, 1)
-Liner_Settings.Aler_Color = true
+Liner_Settings.Aler_Color = false
 Liner_Settings.OffestX = 2
 Liner_Settings.OffestY = 100
 
 local Circle_Settings={}
-Circle_Settings.RayCast = true
+Circle_Settings.RayCast = false
 Circle_Settings.Color = Color3.new(1, 1, 1)
 Circle_Settings.RayCastColor = Color3.new(0.0156863, 1, 0)
 Circle_Settings.Minimum_Size = 3
@@ -75,7 +85,6 @@ function Create_Esp_Name()
 	Esp_Name_Visual.Center = true
 	Esp_Name_Visual.Font = 2
 	Esp_Name_Visual.Outline = true
-	Esp_Name_Visual.OutlineColor = Name_Settings.Color
 	Esp_Name_Visual.Size = 13
 	Esp_Name_Visual.Visible = false
 	return Esp_Name_Visual
@@ -86,7 +95,7 @@ function Create_Health()
 	Esp_Health_Visual.Center = true
 	Esp_Health_Visual.Font = 2
 	Esp_Health_Visual.Outline = true
-	Esp_Health_Visual.OutlineColor = Color3.fromRGB(255, 0, 242)
+	Esp_Health_Visual.OutlineColor = Health_Settings.Color_Under_100
 	Esp_Health_Visual.Size = 13
 	Esp_Health_Visual.Visible = false
 	return Esp_Health_Visual
@@ -286,7 +295,7 @@ end
 
 function Health_System(Visual : SharedTable , Position_On_Screen_Hrp : Vector2) --|: Health
 	Visual.Health.Position = Vector2.new((Position_On_Screen_Hrp.X+Health_Settings.OffestX),(Position_On_Screen_Hrp.Y+Health_Settings.OffestY))
-	Visual.Health.Size = Name_Settings.Size
+	Visual.Health.Size = Health_Settings.Size
 	Tourn_(Visual.Health,true)
 end
 
@@ -352,7 +361,7 @@ function Esp(Player : Player , HumanoidRootPart : Part , Humanoid : Humanoid , C
 	local Hrp_Pose = HumanoidRootPart.Position
 	local Valide_Distance , Calculed_Distance = Return_Distance_Max(Hrp_Pose)
 
-	if not Valide_Distance then return TournOff_Visuals(Visual) end
+	if not Valide_Distance then TournOff_Visuals(Visual) return end
 
 	local Position_On_Screen_Hrp : Vector2 , Valide_On_Screen : boolean = Camera:WorldToViewportPoint(Hrp_Pose)
 
@@ -568,13 +577,267 @@ function Enable_Esp(Bolean)
 
 	elseif not Bolean then
 		Settings.Esp = false
-		for _, connection in ipairs({Connections_Global}) do task.wait()
-			if connection then
+		for _, connection in pairs(Connections_Global) do task.wait()
+			if connection and connection ~= nil then
 				connection:Disconnect()
 				connection = nil 
 			end
 		end
 	end
 end
+----------------------------------------------------------------------------------------------------------------------------------|: Library Start
 
-Enable_Esp(true)
+local Visuals = window1.new({  --|: window1 > Classe Visual
+    text = "Visuals",
+})
+
+local Settings_Windouws = window1.new({ --|: window1 > Classe Settings
+    text = "Settings",
+})
+local dock0 = Visuals.new("dock")
+
+local Enable_Esp_Button = dock0.new("switch", {  --|: Visual > Esp > dock0 > (Button True/False)
+    text = "Esp";
+})
+Enable_Esp_Button.set(false)
+Enable_Esp_Button.event:Connect(function(bool)
+    Enable_Esp(bool)
+end)
+
+local Aler_Color = dock0.new("color", {  --|: Visual > dock0 > Color Alert
+    color = Settings.Aler_Color,
+    text = "Alert_Color",
+})
+Aler_Color.event:Connect(function(color_)
+    Settings.Aler_Color = color_
+end)
+
+local Calculing___ = dock0.new("slider", { --|: Visual > Offest.Y (Health Offest )
+    text = "Y",
+    color = Color3.new(0.160784, 0.290196, 0.478431),
+    min = 100,
+    max = 5000,
+    value = Calculing_Distance,
+    rounding = 1,
+})
+Calculing___.event:Connect(function(x)
+    Settings.Calculing_Distance = x
+end)
+Calculing___.set(Settings.Calculing_Distance)
+
+
+
+local label1 = Visuals.new("label", { --|: Visual > Text-Label 
+    text = "Name/Stubs",
+    color = Color3.new(31,225,255),
+	TextXAlignment = Enum.TextXAlignment.Center
+})
+
+local dock1 = Visuals.new("dock")  --|: Visual > Dock1 (Pour Affiche Plusieur instance dans la meme ligne)
+local dock2 = Visuals.new("dock")
+
+local Add_Name = dock1.new("switch", { --|: Visual > Dock1 > Add_Name (Button True/False)
+    text = "Name";
+})
+Add_Name.set(false)
+Add_Name.event:Connect(function(bool)
+    Add_Visual.Name = bool
+end)
+
+local Add_Stubs = dock1.new("switch", { --|: Visual > Dock1 > Add_Stubs (Button True/False)
+    text = "Stubs";
+})
+Add_Stubs.set(false)
+Add_Stubs.event:Connect(function(bool)
+    Add_Visual.Distance = bool
+end)
+
+local slider_Offest_X = dock2.new("slider", { --|: Visual > Slider (for Name/Stubs  Offest.X )
+    text = "X",
+    color = Color3.new(0.160784, 0.290196, 0.478431),
+    min = -150,
+    max = 150,
+    value = Name_Settings.OffestX,
+    rounding = 0.5,
+})
+slider_Offest_X.event:Connect(function(x)
+    Name_Settings.OffestX = x
+end)
+slider_Offest_X.set(Name_Settings.OffestX)
+
+local slider_Offest_Y = dock2.new("slider", { --|: Visual > Slider (for Name/Stubs  Offest.Y )
+    text = "Y",
+    color = Color3.new(0.160784, 0.290196, 0.478431),
+    min = -150,
+    max = 150,
+    value = Name_Settings.OffestY,
+    rounding = 0.5,
+})
+slider_Offest_Y.event:Connect(function(x)
+    Name_Settings.OffestY = x
+end)
+
+local slider_Size = Visuals.new("slider", { --|: Visual > Size (for Name/Stubs  Size )
+    text = "Size",
+    color = Color3.new(0.160784, 0.290196, 0.478431),
+    min = 1,
+    max = 50,
+    value = Name_Settings.Size,
+    rounding = 1,
+})
+slider_Size.event:Connect(function(x)
+    Name_Settings.Size = x
+end)
+slider_Size.set(Name_Settings.Size)
+
+
+
+slider_Offest_Y.set(Name_Settings.OffestY)
+
+local color1 = dock1.new("color", {  --|: Visual > Color (for Name/Stubs Color-Pick )
+    color = Name_Settings.Color,
+    text = "Color",
+})
+color1.event:Connect(function(color)
+    Name_Settings.Color = color
+end)
+
+----------------------------------|: Box_Liner_Section
+
+local label2 = Visuals.new("label", { --|: Visual > Text-Label 
+    text = "Box/Liner",
+    color = Color3.new(31,225,255),
+	TextXAlignment = Enum.TextXAlignment.Center
+})
+
+local dock3 = Visuals.new("dock")
+local dockColor = Visuals.new("dock")
+
+local Add_Box = dock3.new("switch", { --|: Visual > Dock3 > Box (Button True/False)
+    text = "Box";
+})
+Add_Box.set(false)
+Add_Box.event:Connect(function(bool)
+    Add_Visual.Box = bool
+end)
+local Add_Liner = dock3.new("switch", { --|: Visual > Dock3 > Box (Button True/False)
+    text = "Liner";
+})
+Add_Liner.set(false)
+Add_Liner.event:Connect(function(bool)
+    Add_Visual.Liner = bool
+end)
+
+local colorBox = dockColor.new("color", {  --|: Visual > Color (for Box/Liner Color-Pick )
+    color = Box_Settings.Color,
+    text = "Box",
+}) 
+colorBox.event:Connect(function(color)
+    Box_Settings.Color = color
+end)
+local colorLiner = dockColor.new("color", {  --|: Visual > Color (for Box/Liner Color-Pick )
+    color = Liner_Settings.Color,
+    text = "Liner",
+}) 
+colorLiner.event:Connect(function(color)
+    Liner_Settings.Color = color
+end)
+
+local dropdown1 = dock3.new("dropdown", {
+    text = "Liner_Position",
+})
+dropdown1.new("Top")
+dropdown1.new("Middle")
+dropdown1.new("Bottom")
+dropdown1.event:Connect(function(name)
+	if name == "Top" then
+		Liner_Settings.OffestY = 200
+		elseif name == "Middle" then
+			Liner_Settings.OffestY = 2
+			elseif name == "Bottom" then
+				Liner_Settings.OffestY = 1
+	end
+end)
+
+----------------------------------|: Health_Section
+local label2 = Visuals.new("label", { --|: Visual > Text-Label 
+    text = "Health",
+    color = Color3.new(31,225,255),
+	TextXAlignment = Enum.TextXAlignment.Center
+})
+local dock4 = Visuals.new("dock")
+
+local Add_Health = dock4.new("switch", { --|: Visual > Dock3 > Box (Button True/False)
+    text = "Health";
+})
+Add_Health.set(false)
+Add_Health.event:Connect(function(bool)
+    Add_Visual.Health = bool
+end)
+
+local slider_Size = Visuals.new("slider", { --|: Visual > Size (for Name/Stubs  Size )
+    text = "Size",
+    color = Color3.new(0.160784, 0.290196, 0.478431),
+    min = 1,
+    max = 50,
+    value = Health_Settings.Size,
+    rounding = 1,
+})
+slider_Size.event:Connect(function(x)
+    Health_Settings.Size = x
+end)
+slider_Size.set(Health_Settings.Size)
+
+local dock4Offest = Visuals.new("dock")
+
+local HealthX = dock4Offest.new("slider", { --|: Visual > Offest.X (Health Offest )
+    text = "X",
+    color = Color3.new(0.160784, 0.290196, 0.478431),
+    min = -100,
+    max = 100,
+    value = Health_Settings.OffestX,
+    rounding = 1,
+})
+slider_Size.event:Connect(function(x)
+    Health_Settings.OffestX = x
+end)
+slider_Size.set(Health_Settings.OffestX)
+
+local HealthY = dock4Offest.new("slider", { --|: Visual > Offest.Y (Health Offest )
+    text = "Y",
+    color = Color3.new(0.160784, 0.290196, 0.478431),
+    min = -100,
+    max = 100,
+    value = Health_Settings.OffestY,
+    rounding = 1,
+})
+slider_Size.event:Connect(function(x)
+    Health_Settings.OffestY = x
+end)
+slider_Size.set(Health_Settings.OffestY)
+
+----------------------------------|: Circle_Section
+
+local Circle_Label = Visuals.new("label", { --|: Visual > Text-Label 
+    text = "Cirlce",
+    color = Color3.new(31,225,255),
+	TextXAlignment = Enum.TextXAlignment.Center
+})
+
+local dock5 = Visuals.new("dock")
+
+local Add_Circle = dock5.new("switch", { --|: Visual > Dock5 > Circle (Button True/False)
+    text = "Circle";
+})
+Add_Circle.set(false)
+Add_Circle.event:Connect(function(bool)
+    Add_Visual.Circle = bool
+end)
+
+local Add_RayCast = dock5.new("switch", { --|: Visual > Dock5 > RayCast (Button True/False)
+    text = "RayCast";
+})
+Add_RayCast.set(false)
+Add_RayCast.event:Connect(function(bool)
+    Circle_Settings.RayCast = bool
+end)
